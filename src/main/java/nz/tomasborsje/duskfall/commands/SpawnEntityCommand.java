@@ -36,15 +36,7 @@ public class SpawnEntityCommand extends Command {
             // Spawn entity
             Instance instance = DuskfallServer.overworldInstance; // instance to spawn a boat in
             Pos spawnPosition = new Pos(0D, 42D, 0D);
-            EntityCreature boat = new MmoCreature(EntityType.ZOMBIE);
-
-            // Change meta before init
-            ZombieMeta meta = (ZombieMeta) boat.getEntityMeta();
-            meta.setNotifyAboutChanges(false); // this
-            meta.setOnFire(true);
-            meta.setCustomNameVisible(true);
-            meta.setCustomName(Component.text("Dangerous Zombie", NamedTextColor.RED));
-            meta.setNotifyAboutChanges(true); // this
+            EntityCreature boat = new MmoCreature(EntityType.ZOMBIE, 10);
 
             // TODO: modify AI so that the boat is aggressive
             boat.setInstance(instance, spawnPosition); // actually spawning a boat
