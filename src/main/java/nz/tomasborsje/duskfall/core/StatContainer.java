@@ -5,40 +5,59 @@ public class StatContainer {
     private int currentHealth;
     private int maxMana;
     private int currentMana;
+    private final MmoEntity owner;
     private int level;
     private int stamina;
+    private int strength;
     private int intellect;
 
-    public StatContainer(int level) {
+    public StatContainer(MmoEntity owner, int level) {
+        this.owner = owner;
         this.level = level;
-        recalculateBaseStats();
-        fullyHeal();
+        recalculateStats();
+        healToFull();
     }
 
-    public void reset() {
-        recalculateBaseStats();
-        fullyHeal();
+    public void recalculateStats() {
+        setToBaseStats();
+        // Apply all stat modifiers
+        for(StatModifier statModifier : owner.getStatModifiers()) {
+            applyStatModifier(statModifier);
+        }
+        // Calculate max hp, etc. that relies on previous stats
+        calculateDependentStats();
+        // Clamp transient stats
+        clampHealthAndMana();
     }
 
-    private void fullyHeal() {
-        this.currentHealth = this.maxHealth;
-        this.currentMana = this.maxMana;
-    }
-
-    private void recalculateBaseStats() {
-        this.stamina = level * 3;
-        this.intellect = level * 2;
-
-        this.maxHealth = this.stamina * 10;
-        this.maxMana = this.intellect * 10;
-
-        // Clamp stats
+    private void clampHealthAndMana() {
         if (currentHealth > maxHealth) {
             currentHealth = maxHealth;
         }
         if (currentMana > maxMana) {
             currentMana = maxMana;
         }
+    }
+
+    private void applyStatModifier(StatModifier modifier) {
+        this.stamina += modifier.getStaminaMod();
+        this.strength += modifier.getStrengthMod();
+        this.intellect += modifier.getIntellectMod();
+    }
+
+    public void healToFull() {
+        this.currentHealth = this.maxHealth;
+        this.currentMana = this.maxMana;
+    }
+
+    private void setToBaseStats() {
+        this.stamina = level * 3;
+        this.intellect = level * 2;
+    }
+
+    private void calculateDependentStats() {
+        this.maxHealth = this.stamina * 10;
+        this.maxMana = this.intellect * 10;
     }
 
     /**
@@ -49,9 +68,10 @@ public class StatContainer {
      * @return The amount of damage applied, after modifiers
      */
     public int takeDamage(MmoDamageType type, int amount) {
-        if (!isAlive()) {
+        if (isDead()) {
             return 0;
         }
+        // TODO: Calculate armor damage reduction, etc.
         this.currentHealth -= amount;
         if (currentHealth < 0) {
             currentHealth = 0;
@@ -59,8 +79,8 @@ public class StatContainer {
         return amount;
     }
 
-    public boolean isAlive() {
-        return currentHealth > 0;
+    public boolean isDead() {
+        return currentHealth <= 0;
     }
 
     public int getLevel() {

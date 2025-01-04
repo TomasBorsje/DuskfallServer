@@ -15,9 +15,11 @@ import nz.tomasborsje.duskfall.core.MmoPlayer;
 import nz.tomasborsje.duskfall.events.EntityMeleeAttackListener;
 import nz.tomasborsje.duskfall.events.PlayerJoinListener;
 import nz.tomasborsje.duskfall.events.PlayerLeaveListener;
+import nz.tomasborsje.duskfall.registry.ItemRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
@@ -29,6 +31,13 @@ public class DuskfallServer {
     public static InstanceManager instanceManager;
     public static InstanceContainer overworldInstance;
     public static void main(String[] args) {
+        Thread.setDefaultUncaughtExceptionHandler((thread, exception) -> {
+            logger.error("Uncaught exception in thread: " + thread.getName(), exception);
+        });
+
+        // Parse item definitions
+        ItemRegistry.LoadItemDefinitions(new File("items"));
+
         // Initialize the server
         server = MinecraftServer.init();
 
@@ -42,22 +51,25 @@ public class DuskfallServer {
         overworldInstance.setChunkSupplier(LightingChunk::new);
         overworldInstance.setChunkLoader(new AnvilLoader("worlds/overworld"));
 
+        // Set our custom player provider
         MinecraftServer.getConnectionManager().setPlayerProvider(MmoPlayer::new);
 
-        // TODO: Register events here
+        // Register events
         GlobalEventHandler globalEventHandler = MinecraftServer.getGlobalEventHandler();
         registerEvents(globalEventHandler);
 
+        // Register commands
         CommandManager commandManager = MinecraftServer.getCommandManager();
         registerCommands(commandManager);
 
+        // TODO: Proxy?
         MojangAuth.init();
 
         // Finally, start the server
         logger.info("Starting server!");
         server.start("0.0.0.0", 25565);
         preloadChunks();
-        logger.info("--------------------------------------");
+        logger.info("----------------------------");
     }
 
     private static void preloadChunks() {

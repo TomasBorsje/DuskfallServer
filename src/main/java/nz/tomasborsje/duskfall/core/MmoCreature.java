@@ -1,7 +1,5 @@
 package nz.tomasborsje.duskfall.core;
 
-import net.kyori.adventure.nbt.CompoundBinaryTag;
-import net.kyori.adventure.nbt.IntBinaryTag;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.minestom.server.entity.EntityCreature;
@@ -14,19 +12,19 @@ import net.minestom.server.entity.ai.target.LastEntityDamagerTarget;
 import net.minestom.server.entity.damage.DamageType;
 import net.minestom.server.entity.metadata.EntityMeta;
 import net.minestom.server.item.ItemStack;
-import net.minestom.server.item.Material;
 import net.minestom.server.utils.time.TimeUnit;
+import nz.tomasborsje.duskfall.registry.ItemRegistry;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public class MmoCreature extends EntityCreature implements IMmoEntity {
+public class MmoCreature extends EntityCreature implements MmoEntity {
     private final StatContainer stats;
 
     // TODO: Take in an EntityDef instead of a type + level - for data-driven entities
     public MmoCreature(@NotNull EntityType entityType, int level) {
         super(entityType);
-        this.stats = new StatContainer(level);
+        this.stats = new StatContainer(this, level);
         // TODO: MMO based AI
         // E.g. Attack last hit target, else roam around a given position
         addAIGroup(
@@ -53,7 +51,7 @@ public class MmoCreature extends EntityCreature implements IMmoEntity {
         if (damageTaken >= 0) {
             this.damage(DamageType.GENERIC, 0.01f);
             this.heal();
-            if(!stats.isAlive()) {
+            if(stats.isDead()) {
                 kill(damageInstance);
             }
         }
@@ -66,18 +64,18 @@ public class MmoCreature extends EntityCreature implements IMmoEntity {
             // If a player killed me, send them loot
             player.sendMessage("Congrats on killing me (" + getClass().getSimpleName() + "), dude!");
 
-            CompoundBinaryTag tag = CompoundBinaryTag.builder().put("stamina", IntBinaryTag.intBinaryTag(5)).build();
+            //CompoundBinaryTag tag = CompoundBinaryTag.builder().put("stamina", IntBinaryTag.intBinaryTag(5)).build();
 
-            ItemStack loot = ItemStack.builder(Material.AMETHYST_SHARD)
-                    .glowing()
-                    .set(ItemStackTags.MMO_DATA, tag)
-                    .customName(Component.text("Shard of Stamina"))
-                    .lore(Component.text("+5 Stamina", NamedTextColor.AQUA))
-                    .build();
-
+            ItemStack loot = ItemRegistry.GetRandomItem().buildItemStack();
             player.getInventory().addItemStack(loot);
         }
         kill();
+    }
+
+    @Override
+    public @NotNull List<StatModifier> getStatModifiers() {
+        // TODO: Get all
+        return List.of();
     }
 
     /**

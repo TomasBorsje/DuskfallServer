@@ -1,0 +1,19 @@
+[
+  {
+    "def": "buff",
+    "id": "shard_of_stamina",
+    "name": "Shard of Stamina",
+    "description": "+5 Stamina",
+    "stamina": 50,
+    "material": "iron_ingot",
+    "rarity": "common"
+  },
+  {
+    "def": "item",
+    "id": "shard_of_strength",
+    "name": "Shard of Strength",
+    "description": "+78 Strength",
+    "material": "leather",
+    "rarity": "rare"
+  }
+]

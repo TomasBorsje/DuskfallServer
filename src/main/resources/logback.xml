@@ -8,9 +8,19 @@
         </encoder>
     </appender>
 
+    <!-- File Appender -->
+    <appender name="File" class="ch.qos.logback.core.FileAppender">
+        <file>log.txt</file>
+        <append>true</append>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{2} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
     <!-- Root Logger configuration -->
     <root level="debug">
         <appender-ref ref="Console" />
+        <appender-ref ref="File" />
     </root>
 
 </configuration>
