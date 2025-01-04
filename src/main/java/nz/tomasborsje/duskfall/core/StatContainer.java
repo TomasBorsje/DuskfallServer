@@ -84,6 +84,11 @@ public class StatContainer {
         return amount;
     }
 
+    /**
+     * Increases current health based on the given value.
+     * Current health will be clamped to max health if it exceeds it.
+     * @param health The amount to increase current health by
+     */
     public void gainHealth(int health) {
         if(isDead()) {
             return;
