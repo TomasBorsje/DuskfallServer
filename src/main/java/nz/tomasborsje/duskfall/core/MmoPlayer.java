@@ -71,6 +71,9 @@ public class MmoPlayer extends Player implements PlayerProvider, MmoEntity {
             shouldRecalculateStats = false;
         }
 
+        // Health regen (1/tick)
+        stats.gainHealth(1);
+
         // Show health to player
         Component healthBar = Component.text("\u2764 ", NamedTextColor.RED)
                 .append(Component.text(stats.getCurrentHealth() + " / " + stats.getMaxHealth(), NamedTextColor.WHITE));

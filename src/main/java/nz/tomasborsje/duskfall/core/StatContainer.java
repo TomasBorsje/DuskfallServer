@@ -1,5 +1,10 @@
 package nz.tomasborsje.duskfall.core;
 
+/**
+ * Container class that holds all stats an MMO entity can have.
+ * Note that this class is the low-level stat values, and modifiers like damage increases aren't applied here.
+ * They should be applied in the MmoEntity implementing class's heal() and hurt() functions.
+ */
 public class StatContainer {
     private int maxHealth;
     private int currentHealth;
@@ -71,12 +76,22 @@ public class StatContainer {
         if (isDead()) {
             return 0;
         }
-        // TODO: Calculate armor damage reduction, etc.
+        // TODO: Calculate armor damage reduction, etc. based on damage type
         this.currentHealth -= amount;
         if (currentHealth < 0) {
             currentHealth = 0;
         }
         return amount;
+    }
+
+    public void gainHealth(int health) {
+        if(isDead()) {
+            return;
+        }
+        this.currentHealth += health;
+        if (currentHealth > maxHealth) {
+            currentHealth = maxHealth;
+        }
     }
 
     public boolean isDead() {

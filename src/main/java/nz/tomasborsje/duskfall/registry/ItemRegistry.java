@@ -139,7 +139,6 @@ public class ItemRegistry {
         }
 
         // Register the item definition
-        DuskfallServer.logger.info("Registering def "+itemDefinition);
         itemRegistry.put(itemDefinition.getId(), itemDefinition);
     }
 }
