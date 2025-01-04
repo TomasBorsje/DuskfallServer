@@ -5,7 +5,6 @@ import net.minestom.server.command.builder.arguments.ArgumentType;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.EntityCreature;
 import net.minestom.server.entity.EntityType;
-import net.minestom.server.instance.Instance;
 import nz.tomasborsje.duskfall.DuskfallServer;
 import nz.tomasborsje.duskfall.core.MmoCreature;
 
@@ -23,21 +22,19 @@ public class SpawnEntityCommand extends Command {
         // Callback executed if the argument has been wrongly used
         entityIdArg.setCallback((sender, exception) -> {
             final String input = exception.getInput();
-            sender.sendMessage("The number " + input + " is invalid!");
+            sender.sendMessage("The given entity iD " + input + " is invalid!");
         });
 
         addSyntax((sender, context) -> {
             final String entityId = context.get(entityIdArg);
 
-            // Spawn entity
-            Instance instance = DuskfallServer.overworldInstance; // instance to spawn a boat in
+            // Create entity
+            // TODO: Use entity ID and lookup entity registry
+            EntityCreature zombie = new MmoCreature(EntityType.ZOMBIE, 2);
             Pos spawnPosition = new Pos(0D, 42D, 0D);
-            EntityCreature boat = new MmoCreature(EntityType.ZOMBIE, 2);
 
-            // TODO: modify AI so that the boat is aggressive
-            boat.setInstance(instance, spawnPosition); // actually spawning a boat
-
+            // Add to world
+            zombie.setInstance(DuskfallServer.overworldInstance, spawnPosition);
         }, entityIdArg);
-
     }
 }
