@@ -4,5 +4,8 @@ public interface StatModifier {
     public int getStaminaMod();
     public int getStrengthMod();
     public int getIntellectMod();
-
+    public int getFocusMod();
+    public int getMeleeDamageBonus();
+    public int getBowDamageBonus();
+    public int getSpellPowerBonus();
 }

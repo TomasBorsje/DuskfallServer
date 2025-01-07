@@ -15,6 +15,10 @@ public class StatContainer {
     private int stamina;
     private int strength;
     private int intellect;
+    private int focus;
+    private int meleeDamage;
+    private int bowDamage;
+    private int spellPower;
 
     public StatContainer(MmoEntity owner, int level) {
         this.owner = owner;
@@ -24,6 +28,7 @@ public class StatContainer {
     }
 
     public void recalculateStats() {
+        // Return to base stats
         setToBaseStats();
         // Apply all stat modifiers
         for(StatModifier statModifier : owner.getStatModifiers()) {
@@ -48,6 +53,10 @@ public class StatContainer {
         this.stamina += modifier.getStaminaMod();
         this.strength += modifier.getStrengthMod();
         this.intellect += modifier.getIntellectMod();
+        this.focus += modifier.getFocusMod();
+        this.meleeDamage += modifier.getMeleeDamageBonus();
+        this.bowDamage += modifier.getBowDamageBonus();
+        this.spellPower += modifier.getSpellPowerBonus();
     }
 
     public void healToFull() {
@@ -57,12 +66,21 @@ public class StatContainer {
 
     private void setToBaseStats() {
         this.stamina = level * 3;
-        this.intellect = level * 2;
+        // TODO: Level scaling?
+        this.strength = 0;
+        this.intellect = 0;
+        this.focus = 0;
+        this.meleeDamage = 1;
+        this.bowDamage = 1;
+        this.spellPower = 0;
     }
 
     private void calculateDependentStats() {
         this.maxHealth = this.stamina * 10;
         this.maxMana = this.intellect * 10;
+        this.meleeDamage += this.strength * 2;
+        this.bowDamage += this.focus * 2;
+        this.spellPower += this.intellect * 2;
     }
 
     /**
@@ -121,5 +139,29 @@ public class StatContainer {
 
     public int getCurrentMana() {
         return currentMana;
+    }
+
+    public int getStamina() {
+        return stamina;
+    }
+
+    public int getStrength() {
+        return strength;
+    }
+
+    public int getIntellect() {
+        return intellect;
+    }
+
+    public int getMeleeDamage() {
+        return meleeDamage;
+    }
+
+    public int getBowDamage() {
+        return bowDamage;
+    }
+
+    public int getSpellPower() {
+        return spellPower;
     }
 }

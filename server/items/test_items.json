@@ -5,6 +5,7 @@
     "name": "Shard of Stamina",
     "description": "+5 Stamina",
     "stamina": 50,
+    "melee_damage": 50,
     "material": "iron_ingot",
     "rarity": "common"
   },
