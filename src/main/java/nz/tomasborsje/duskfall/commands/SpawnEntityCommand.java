@@ -5,6 +5,7 @@ import net.minestom.server.command.builder.arguments.ArgumentType;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.EntityCreature;
 import net.minestom.server.entity.EntityType;
+import net.minestom.server.entity.Player;
 import nz.tomasborsje.duskfall.DuskfallServer;
 import nz.tomasborsje.duskfall.core.MmoCreature;
 
@@ -27,11 +28,12 @@ public class SpawnEntityCommand extends Command {
 
         addSyntax((sender, context) -> {
             final String entityId = context.get(entityIdArg);
+            EntityType entityType = EntityType.fromNamespaceId(entityId.toLowerCase());
 
             // Create entity
             // TODO: Use entity ID and lookup entity registry
-            EntityCreature zombie = new MmoCreature(EntityType.ZOMBIE, 2);
-            Pos spawnPosition = new Pos(0D, 42D, 0D);
+            EntityCreature zombie = new MmoCreature(entityType, 1);
+            Pos spawnPosition = new Pos(3, 42, 3);
 
             // Add to world
             zombie.setInstance(DuskfallServer.overworldInstance, spawnPosition);

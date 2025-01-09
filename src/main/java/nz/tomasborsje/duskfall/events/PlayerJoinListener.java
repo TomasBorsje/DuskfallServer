@@ -1,10 +1,15 @@
 package nz.tomasborsje.duskfall.events;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.minestom.server.coordinate.Pos;
+import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.Player;
 import net.minestom.server.event.EventListener;
 import net.minestom.server.event.player.AsyncPlayerConfigurationEvent;
 import nz.tomasborsje.duskfall.DuskfallServer;
+import nz.tomasborsje.duskfall.core.MmoPlayer;
+import nz.tomasborsje.duskfall.database.PlayerData;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -20,9 +25,21 @@ public class PlayerJoinListener implements EventListener<AsyncPlayerConfiguratio
     @Override
     public Result run(@NotNull AsyncPlayerConfigurationEvent event) {
         final Player player = event.getPlayer();
-        event.setSpawningInstance(DuskfallServer.overworldInstance);
-        player.setRespawnPoint(new Pos(0, 42, 0));
 
+        // Only whitelist myself
+        if(!event.getPlayer().getUsername().equals("Wingmann")) {
+            DuskfallServer.logger.warn("Some moron named {} tried to join!", event.getPlayer().getUsername());
+            event.getPlayer().kick(Component.text("?", NamedTextColor.RED));
+        }
+
+        if(player instanceof MmoPlayer mmoPlayer) {
+            DuskfallServer.logger.info("Loaded player data for player {} who is level {}!", mmoPlayer.getUsername(), mmoPlayer.getStats().getLevel());
+            player.setRespawnPoint(new Pos(0, 42, 0));
+            event.setSpawningInstance(DuskfallServer.overworldInstance);
+        }
+        else {
+            event.getPlayer().kick(Component.text("Couldn't cast Player to MmoPlayer, please report this!", NamedTextColor.RED));
+        }
         return Result.SUCCESS;
     }
 }

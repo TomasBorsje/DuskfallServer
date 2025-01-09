@@ -13,14 +13,13 @@ repositories {
 dependencies {
     implementation 'net.minestom:minestom-snapshots:d8c5831f4e'
 
-    // SLF4J API (facade)
+    // Logging
     implementation 'org.slf4j:slf4j-api:2.0.16'
-
-    // Logback classic (SLF4J's default logging implementation)
     implementation 'ch.qos.logback:logback-classic:1.5.15'
+    implementation 'ch.qos.logback:logback-core:1.5.15'
 
-    // Logback core (required by Logback)
-    implementation 'ch.qos.logback:logback-core:1.5.15' // Replace with the latest Logback version
+    // MongoDB
+    implementation 'org.mongodb:mongodb-driver-sync:5.2.1'
 }
 
 java {

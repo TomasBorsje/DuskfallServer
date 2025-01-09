@@ -3,6 +3,8 @@ package nz.tomasborsje.duskfall.events;
 import net.minestom.server.event.EventListener;
 import net.minestom.server.event.player.PlayerDisconnectEvent;
 import nz.tomasborsje.duskfall.DuskfallServer;
+import nz.tomasborsje.duskfall.core.MmoPlayer;
+import nz.tomasborsje.duskfall.database.PlayerData;
 import org.jetbrains.annotations.NotNull;
 
 public class PlayerLeaveListener implements EventListener<PlayerDisconnectEvent> {
@@ -14,8 +16,13 @@ public class PlayerLeaveListener implements EventListener<PlayerDisconnectEvent>
     @NotNull
     @Override
     public Result run(@NotNull PlayerDisconnectEvent event) {
-        DuskfallServer.overworldInstance.saveChunksToStorage().join();
-        DuskfallServer.logger.info("Saved chunks.");
+
+        if(event.getPlayer() instanceof MmoPlayer mmoPlayer) {
+            PlayerData data = mmoPlayer.getPlayerData();
+            DuskfallServer.dbConnection.savePlayerData(data);
+            DuskfallServer.logger.info("Saved player data for player {} to DB!", data.username);
+        }
+
         return Result.SUCCESS;
     }
 }

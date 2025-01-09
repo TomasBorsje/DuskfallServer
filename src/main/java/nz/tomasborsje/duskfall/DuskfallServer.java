@@ -12,6 +12,7 @@ import net.minestom.server.instance.anvil.AnvilLoader;
 import net.minestom.server.instance.block.Block;
 import nz.tomasborsje.duskfall.commands.SpawnEntityCommand;
 import nz.tomasborsje.duskfall.core.MmoPlayer;
+import nz.tomasborsje.duskfall.database.DatabaseConnection;
 import nz.tomasborsje.duskfall.events.EntityMeleeAttackListener;
 import nz.tomasborsje.duskfall.events.PlayerJoinListener;
 import nz.tomasborsje.duskfall.events.PlayerLeaveListener;
@@ -23,13 +24,17 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
+import java.util.logging.Level;
 
 
 public class DuskfallServer {
     public static Logger logger = LoggerFactory.getLogger(DuskfallServer.class);
+    public static DatabaseConnection dbConnection;
     public static MinecraftServer server;
     public static InstanceManager instanceManager;
     public static InstanceContainer overworldInstance;
+
+
     public static void main(String[] args) {
         Thread.setDefaultUncaughtExceptionHandler((thread, exception) -> {
             logger.error("Uncaught exception in thread: " + thread.getName(), exception);
@@ -37,6 +42,9 @@ public class DuskfallServer {
 
         // Parse item definitions
         ItemRegistry.LoadItemDefinitions(new File("items"));
+
+        // Connect to DB
+        dbConnection = new DatabaseConnection(System.getenv("MMO_DATABASE_CONNECTION_STRING"));
 
         // Initialize the server
         server = MinecraftServer.init();
@@ -69,7 +77,7 @@ public class DuskfallServer {
         logger.info("Starting server!");
         server.start("0.0.0.0", 25565);
         preloadChunks();
-        logger.info("----------------------------");
+        logger.info("--------------");
     }
 
     private static void preloadChunks() {

@@ -67,9 +67,9 @@ public class StatContainer {
     private void setToBaseStats() {
         this.stamina = level * 3;
         // TODO: Level scaling?
-        this.strength = 0;
-        this.intellect = 0;
-        this.focus = 0;
+        this.strength = level * 2;
+        this.intellect = level * 2;
+        this.focus = level * 2;
         this.meleeDamage = 1;
         this.bowDamage = 1;
         this.spellPower = 0;
@@ -123,6 +123,10 @@ public class StatContainer {
 
     public int getLevel() {
         return level;
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
     }
 
     public int getMaxHealth() {
