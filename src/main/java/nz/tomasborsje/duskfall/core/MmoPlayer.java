@@ -9,10 +9,13 @@ import net.minestom.server.entity.Entity;
 import net.minestom.server.entity.EquipmentSlot;
 import net.minestom.server.entity.Player;
 import net.minestom.server.entity.damage.DamageType;
+import net.minestom.server.item.ItemComponent;
+import net.minestom.server.item.ItemStack;
 import net.minestom.server.network.PlayerProvider;
 import net.minestom.server.network.player.GameProfile;
 import net.minestom.server.network.player.PlayerConnection;
 import nz.tomasborsje.duskfall.DuskfallServer;
+import nz.tomasborsje.duskfall.buffs.Buff;
 import nz.tomasborsje.duskfall.database.PlayerData;
 import org.jetbrains.annotations.NotNull;
 
@@ -20,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MmoPlayer extends Player implements PlayerProvider, MmoEntity {
+    private final List<Buff> buffs = new ArrayList<>();
     private final StatContainer stats;
     private boolean shouldRecalculateStats = true;
 
@@ -30,20 +34,34 @@ public class MmoPlayer extends Player implements PlayerProvider, MmoEntity {
     public MmoPlayer(@NotNull PlayerConnection playerConnection, @NotNull GameProfile gameProfile, @NotNull PlayerData data) {
         super(playerConnection, gameProfile);
         stats = new StatContainer(this, data.level);
-        DuskfallServer.logger.info("Player object created with loaded level "+stats.getLevel());
+        DuskfallServer.logger.info("Player object created with loaded level {}", stats.getLevel());
     }
 
     @Override
     public void tick(long time) {
         super.tick(time);
 
+        // Tick all buffs then remove any marked for removal
+        buffs.forEach(Buff::tick);
+        buffs.removeIf(buff -> {
+            if (buff.shouldRemove()) {
+                buff.onRemove();
+                return true;
+            }
+            return false;
+        });
+
         // TODO: Decide when stats are outdated (item equip, buff added, damage taken, etc.)
         shouldRecalculateStats = true;
         // If our current stats are outdated, recalculate
         if(shouldRecalculateStats) {
             stats.recalculateStats();
+            this.setLevel(stats.getLevel());
             shouldRecalculateStats = false;
         }
+
+        // Set health bar to display player health
+        setHealth(stats.getCurrentHealth()/(float)stats.getMaxHealth() * 19 + 1); // TODO: Interrupt play out packet?
 
         // Health regen (1/tick)
         stats.gainHealth(1);
@@ -70,14 +88,26 @@ public class MmoPlayer extends Player implements PlayerProvider, MmoEntity {
 
     @Override
     public void kill(DamageInstance killingBlow) {
-        DuskfallServer.logger.info(getUsername()+" died!");
-        sendMessage(Component.text("You died!", NamedTextColor.RED));
-        teleport(new Pos(0, 46, 0));
-
-        // TODO: Remove buffs, etc.
-
+        // Remove buffs
+        buffs.forEach(buff -> buff.onOwnerDie(killingBlow));
+        buffs.clear();
+        // Reset stats
         stats.recalculateStats();
         stats.healToFull();
+
+        DuskfallServer.logger.info("{} died!", getUsername());
+        sendMessage(Component.text("You died!", NamedTextColor.RED));
+        teleport(new Pos(0, 46, 0));
+    }
+
+    @Override
+    public void addBuff(@NotNull Buff newBuff) {
+        // Replace buff if it exists, and should be replaced
+        if(newBuff.shouldReplaceExisting()) {
+            buffs.removeIf(buff -> buff.getId().equals(newBuff.getId()));
+        }
+        buffs.add(newBuff);
+        DuskfallServer.logger.info("Player gained buff {}", newBuff.getId());
     }
 
     /**
@@ -94,6 +124,33 @@ public class MmoPlayer extends Player implements PlayerProvider, MmoEntity {
         sendMessage(Component.text("You have reached level "+stats.getLevel()+"!", NamedTextColor.GOLD));
     }
 
+    public void giveItem(ItemStack itemStack, ItemGainReason reason) {
+        // Add item to inventory
+        boolean addedSuccessfully = inventory.addItemStack(itemStack);
+
+        if(!addedSuccessfully) {
+            // TODO: Send to mailbox instead, etc.
+        }
+        else {
+            Component itemName = itemStack.get(ItemComponent.CUSTOM_NAME);
+            if(itemName == null) { itemName = Component.text("null"); }
+
+            // Append lore lines
+            Component hoverText = itemName.appendNewline();
+            List<Component> lore = itemStack.get(ItemComponent.LORE);
+            if(lore != null) {
+                for(Component loreLine : lore) {
+                    hoverText = hoverText.append(loreLine);
+                }
+            }
+            // Show message in chat informing player of item gain
+            sendMessage(Component.text("You "+reason.gainVerb +" ", NamedTextColor.GRAY)
+                    .append(Component.text(itemStack.amount()+"x ", NamedTextColor.WHITE))
+                    .append(itemName).hoverEvent(hoverText) // Show item description on hover
+                    .append(Component.text(".", NamedTextColor.GRAY)));
+        }
+    }
+
     @Override
     public @NotNull List<StatModifier> getStatModifiers() {
         // TODO: Cache this (don't think it's very expensive tbh)
@@ -105,12 +162,17 @@ public class MmoPlayer extends Player implements PlayerProvider, MmoEntity {
         ItemBasedStatModifier leggingsModifier = new ItemBasedStatModifier(inventory.getEquipment(EquipmentSlot.LEGGINGS, (byte)0));
         ItemBasedStatModifier bootsModifier = new ItemBasedStatModifier(inventory.getEquipment(EquipmentSlot.BOOTS, (byte)0));
         ItemBasedStatModifier heldModifier = new ItemBasedStatModifier(inventory.getItemStack(getHeldSlot()));
-
         list.add(helmetModifier);
         list.add(chestplateModifier);
         list.add(leggingsModifier);
         list.add(bootsModifier);
         list.add(heldModifier);
+
+        // Add all stat modifying buffs
+        list.addAll(buffs.stream()
+                .filter(StatModifier.class::isInstance)
+                .map(StatModifier.class::cast)
+                .toList());
 
         return list;
     }

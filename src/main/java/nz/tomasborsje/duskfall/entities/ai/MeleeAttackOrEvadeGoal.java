@@ -3,7 +3,6 @@ package nz.tomasborsje.duskfall.entities.ai;
 import net.minestom.server.coordinate.Point;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.Entity;
-import net.minestom.server.entity.EntityCreature;
 import net.minestom.server.entity.ai.GoalSelector;
 import net.minestom.server.entity.attribute.Attribute;
 import net.minestom.server.entity.attribute.AttributeModifier;
@@ -12,12 +11,11 @@ import net.minestom.server.entity.pathfinding.Navigator;
 import net.minestom.server.utils.NamespaceID;
 import net.minestom.server.utils.time.Cooldown;
 import net.minestom.server.utils.time.TimeUnit;
+import nz.tomasborsje.duskfall.core.MmoCreature;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.Duration;
 import java.time.temporal.TemporalUnit;
-import java.util.UUID;
-import java.util.jar.Attributes;
 
 public class MeleeAttackOrEvadeGoal extends GoalSelector {
 
@@ -41,7 +39,7 @@ public class MeleeAttackOrEvadeGoal extends GoalSelector {
      * @param delay          the delay between each attacks
      * @param timeUnit       the unit of the delay
      */
-    public MeleeAttackOrEvadeGoal(@NotNull EntityCreature entityCreature, Pos spawnPos, double attackRange, double leashRange, int delay, @NotNull TemporalUnit timeUnit) {
+    public MeleeAttackOrEvadeGoal(@NotNull MmoCreature entityCreature, Pos spawnPos, double attackRange, double leashRange, int delay, @NotNull TemporalUnit timeUnit) {
         this(entityCreature, spawnPos, attackRange, leashRange, Duration.of(delay, timeUnit));
     }
 
@@ -50,7 +48,7 @@ public class MeleeAttackOrEvadeGoal extends GoalSelector {
      * @param attackRange          the allowed range the entity can attack others.
      * @param delay          the delay between each attacks
      */
-    public MeleeAttackOrEvadeGoal(@NotNull EntityCreature entityCreature, Pos spawnPos, double attackRange, double leashRange, Duration delay) {
+    public MeleeAttackOrEvadeGoal(@NotNull MmoCreature entityCreature, Pos spawnPos, double attackRange, double leashRange, Duration delay) {
         super(entityCreature);
         this.spawnPos = spawnPos;
         this.range = attackRange;
@@ -81,11 +79,12 @@ public class MeleeAttackOrEvadeGoal extends GoalSelector {
             target = findTarget();
         }
 
-
-
         Navigator navigator = entityCreature.getNavigator();
+
+        // Stop if we have no target or we've returned to spawn after resetting
         this.stop = target == null || (resetting && entityCreature.getPosition().samePoint(spawnPos));
 
+        // Stop if our target is in a different instance
         if(target != null && target.getInstance() != entityCreature.getInstance()) {
             stop = true;
         }
@@ -95,7 +94,7 @@ public class MeleeAttackOrEvadeGoal extends GoalSelector {
             // Attack the target entity if they're not too far from our spawn and we're not resetting
             if (!resetting && entityCreature.getDistanceSquared(target) <= range * range) {
                 entityCreature.lookAt(target);
-                if (!Cooldown.hasCooldown(time, lastHit, delay)) {
+                if (!Cooldown.hasCooldown(time, lastHit, delay) && !entityCreature.isDead()) {
                     entityCreature.attack(target, true);
                     this.lastHit = time;
                 }
@@ -104,7 +103,6 @@ public class MeleeAttackOrEvadeGoal extends GoalSelector {
 
             // Move toward the target entity if they're in range, else reset
             if(!resetting && entityCreature.getDistanceSquared(spawnPos) <= leashRange * leashRange) {
-
                 final var pathPosition = navigator.getPathPosition();
                 final var targetPosition = target.getPosition();
                 if (pathPosition == null || !pathPosition.samePoint(targetPosition)) {
@@ -114,15 +112,18 @@ public class MeleeAttackOrEvadeGoal extends GoalSelector {
                     }
                 }
             }
+            // Out of range, move back to spawn position
             else {
-                // Out of range
-                resetting = true;
-                entityCreature.getAttribute(Attribute.MOVEMENT_SPEED).addModifier(evadeSpeed);
                 final var pathPosition = navigator.getPathPosition();
                 if (pathPosition == null || !pathPosition.samePoint(spawnPos)) {
                     if (this.cooldown.isReady(time)) {
                         this.cooldown.refreshLastUpdate(time);
                         navigator.setPathTo(spawnPos);
+
+                        // Reset entity
+                        resetting = true;
+                        // TODO: Reset health?
+                        entityCreature.getAttribute(Attribute.MOVEMENT_SPEED).addModifier(evadeSpeed);
                     }
                 }
             }
@@ -136,6 +137,8 @@ public class MeleeAttackOrEvadeGoal extends GoalSelector {
 
     @Override
     public void end() {
+        // Exit combat
+        ((MmoCreature)entityCreature).exitCombat();
         // Stop following the target
         entityCreature.getNavigator().setPathTo(null);
         entityCreature.getAttribute(Attribute.MOVEMENT_SPEED).removeModifier(evadeSpeed);

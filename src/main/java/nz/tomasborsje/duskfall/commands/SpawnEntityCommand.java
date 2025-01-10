@@ -3,11 +3,12 @@ package nz.tomasborsje.duskfall.commands;
 import net.minestom.server.command.builder.Command;
 import net.minestom.server.command.builder.arguments.ArgumentType;
 import net.minestom.server.coordinate.Pos;
-import net.minestom.server.entity.EntityCreature;
 import net.minestom.server.entity.EntityType;
-import net.minestom.server.entity.Player;
 import nz.tomasborsje.duskfall.DuskfallServer;
+import nz.tomasborsje.duskfall.buffs.Buff;
+import nz.tomasborsje.duskfall.buffs.BurningStrengthBuff;
 import nz.tomasborsje.duskfall.core.MmoCreature;
+import nz.tomasborsje.duskfall.core.MmoEntity;
 
 public class SpawnEntityCommand extends Command {
 
@@ -30,11 +31,19 @@ public class SpawnEntityCommand extends Command {
             final String entityId = context.get(entityIdArg);
             EntityType entityType = EntityType.fromNamespaceId(entityId.toLowerCase());
 
+            // Add debuff to command sender as well
+            if(sender instanceof MmoEntity senderEntity) {
+                senderEntity.addBuff(new BurningStrengthBuff(senderEntity));
+            }
+
             // Create entity
             // TODO: Use entity ID and lookup entity registry
             Pos spawnPosition = new Pos(3, 42, 3);
-            EntityCreature zombie = new MmoCreature(entityType, spawnPosition, 100);
+            MmoCreature zombie = new MmoCreature(entityType, spawnPosition, 10);
 
+            // Add buff to zombie
+            Buff strengthBuff = new BurningStrengthBuff(zombie);
+            zombie.addBuff(strengthBuff);
 
             // Add to world
             zombie.setInstance(DuskfallServer.overworldInstance, spawnPosition);

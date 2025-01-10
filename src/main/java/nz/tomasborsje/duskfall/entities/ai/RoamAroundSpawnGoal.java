@@ -2,8 +2,8 @@ package nz.tomasborsje.duskfall.entities.ai;
 
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.coordinate.Vec;
-import net.minestom.server.entity.EntityCreature;
 import net.minestom.server.entity.ai.GoalSelector;
+import nz.tomasborsje.duskfall.core.MmoCreature;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -23,7 +23,7 @@ public class RoamAroundSpawnGoal extends GoalSelector {
 
     private long lastStroll;
 
-    public RoamAroundSpawnGoal(@NotNull EntityCreature entityCreature, Pos spawn, int radius) {
+    public RoamAroundSpawnGoal(@NotNull MmoCreature entityCreature, Pos spawn, int radius) {
         super(entityCreature);
         this.spawn = spawn;
         this.roamTargets = getRoamTargets(radius);

@@ -1,15 +1,15 @@
 package nz.tomasborsje.duskfall.entities.ai;
 
 import net.minestom.server.entity.Entity;
-import net.minestom.server.entity.EntityCreature;
 import net.minestom.server.entity.ai.TargetSelector;
+import nz.tomasborsje.duskfall.core.MmoCreature;
 import org.jetbrains.annotations.NotNull;
 
 public class EntityCurrentTarget extends TargetSelector {
 
     private static final int RANGE = 20;
 
-    public EntityCurrentTarget(@NotNull EntityCreature entityCreature) {
+    public EntityCurrentTarget(@NotNull MmoCreature entityCreature) {
         super(entityCreature);
     }
 

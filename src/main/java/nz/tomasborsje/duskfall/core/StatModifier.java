@@ -1,11 +1,11 @@
 package nz.tomasborsje.duskfall.core;
 
 public interface StatModifier {
-    public int getStaminaMod();
-    public int getStrengthMod();
-    public int getIntellectMod();
-    public int getFocusMod();
-    public int getMeleeDamageBonus();
-    public int getBowDamageBonus();
-    public int getSpellPowerBonus();
+    default int getStaminaMod() { return 0; }
+    default int getStrengthMod() { return 0; }
+    default int getIntellectMod() { return 0; }
+    default int getFocusMod() { return 0; }
+    default int getMeleeDamageBonus() { return 0; }
+    default int getBowDamageBonus() { return 0; }
+    default int getSpellPowerBonus() { return 0; }
 }
