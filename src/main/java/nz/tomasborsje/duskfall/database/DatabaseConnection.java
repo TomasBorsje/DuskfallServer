@@ -68,4 +68,8 @@ public class DatabaseConnection {
     private MongoCollection<Document> getPlayers() {
         return mmoDatabase.getCollection("players");
     }
+
+    public void disconnect() {
+        client.close();
+    }
 }

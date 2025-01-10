@@ -1,5 +1,7 @@
 package nz.tomasborsje.duskfall;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.LoggerContext;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.command.CommandManager;
 import net.minestom.server.event.GlobalEventHandler;
@@ -25,7 +27,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.BiConsumer;
-import java.util.logging.Level;
 
 
 public class DuskfallServer {
@@ -37,9 +38,10 @@ public class DuskfallServer {
 
 
     public static void main(String[] args) {
-        Thread.setDefaultUncaughtExceptionHandler((thread, exception) -> {
-            logger.error("Uncaught exception in thread: " + thread.getName(), exception);
-        });
+        Thread.setDefaultUncaughtExceptionHandler(DuskfallServer::handleUncaughtException);
+
+        // Set MongoDB logger to error so it doesn't spam
+        ((LoggerContext) LoggerFactory.getILoggerFactory()).getLogger("org.mongodb.driver").setLevel(Level.ERROR);
 
         // Parse item definitions
         ItemRegistry.LoadItemDefinitions(new File("items"));
@@ -104,6 +106,18 @@ public class DuskfallServer {
 
     private static void registerCommands(CommandManager commandManager) {
         commandManager.register(new SpawnEntityCommand());
+    }
+
+    /**
+     * Called when an uncaught exception is encountered.
+     * @param t The thread the uncaught exception is from
+     * @param e The uncaught exception
+     */
+    public static void handleUncaughtException(Thread t, Throwable e) {
+        logger.error("Uncaught exception during runtime: ", e);
+        // Shut down server
+        MinecraftServer.stopCleanly();
+        dbConnection.disconnect();
     }
 
     @FunctionalInterface
