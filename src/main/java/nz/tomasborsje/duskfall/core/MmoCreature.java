@@ -20,10 +20,11 @@ import nz.tomasborsje.duskfall.registry.ItemRegistry;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class MmoCreature extends EntityCreature implements MmoEntity {
-    private final List<Buff> buffs = new ArrayList<>();
+    private final List<Buff> buffs = Collections.synchronizedList(new ArrayList<>());
     private final Pos spawnPos;
     private final StatContainer stats;
 
