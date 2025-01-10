@@ -32,8 +32,9 @@ public class SpawnEntityCommand extends Command {
 
             // Create entity
             // TODO: Use entity ID and lookup entity registry
-            EntityCreature zombie = new MmoCreature(entityType, 1);
             Pos spawnPosition = new Pos(3, 42, 3);
+            EntityCreature zombie = new MmoCreature(entityType, spawnPosition, 100);
+
 
             // Add to world
             zombie.setInstance(DuskfallServer.overworldInstance, spawnPosition);
