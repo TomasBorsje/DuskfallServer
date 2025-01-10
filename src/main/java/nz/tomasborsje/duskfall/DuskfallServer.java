@@ -16,6 +16,7 @@ import nz.tomasborsje.duskfall.database.DatabaseConnection;
 import nz.tomasborsje.duskfall.events.EntityMeleeAttackListener;
 import nz.tomasborsje.duskfall.events.PlayerJoinListener;
 import nz.tomasborsje.duskfall.events.PlayerLeaveListener;
+import nz.tomasborsje.duskfall.events.ServerListPingListener;
 import nz.tomasborsje.duskfall.registry.ItemRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -98,6 +99,7 @@ public class DuskfallServer {
         //globalEventHandler.addListener(new BlockBreakListener());
         globalEventHandler.addListener(new PlayerLeaveListener());
         globalEventHandler.addListener(new EntityMeleeAttackListener());
+        globalEventHandler.addListener(new ServerListPingListener());
     }
 
     private static void registerCommands(CommandManager commandManager) {
