@@ -1,5 +1,6 @@
 package nz.tomasborsje.duskfall.entities;
 
+import net.kyori.adventure.nbt.BinaryTagIO;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.minestom.server.coordinate.Pos;
@@ -17,10 +18,15 @@ import nz.tomasborsje.duskfall.buffs.Buff;
 import nz.tomasborsje.duskfall.core.*;
 import nz.tomasborsje.duskfall.database.PlayerData;
 import nz.tomasborsje.duskfall.sounds.Sounds;
+import org.apache.commons.io.IOUtils;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MmoPlayer extends Player implements PlayerProvider, MmoEntity {
     private final List<Buff> buffs = new ArrayList<>();
@@ -28,12 +34,27 @@ public class MmoPlayer extends Player implements PlayerProvider, MmoEntity {
     private boolean shouldRecalculateStats = true;
 
     public MmoPlayer(@NotNull PlayerConnection playerConnection, @NotNull GameProfile gameProfile) {
-        this(playerConnection, gameProfile, DuskfallServer.dbConnection.getPlayerData(gameProfile.name()));
+        this(playerConnection, gameProfile, DuskfallServer.dbConnection.loadPlayerData(gameProfile.name()));
     }
 
     public MmoPlayer(@NotNull PlayerConnection playerConnection, @NotNull GameProfile gameProfile, @NotNull PlayerData data) {
         super(playerConnection, gameProfile);
+
+        // Populate inventory
+        BinaryTagIO.Reader reader = BinaryTagIO.reader();
+        // Populate inventory with items from playerdata
+        for(Map.Entry<String, String> entry : data.inventoryItems.entrySet()) {
+            try {
+                int slot = Integer.parseInt(entry.getKey());
+                ItemStack stack = ItemStack.fromItemNBT(reader.read(IOUtils.toInputStream(entry.getValue())));
+                inventory.setItemStack(slot, stack);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
         stats = new StatContainer(this, data.level);
+
         DuskfallServer.logger.info("Player object created with loaded level {}", stats.getLevel());
     }
 
@@ -208,13 +229,30 @@ public class MmoPlayer extends Player implements PlayerProvider, MmoEntity {
      * @return PlayerData object containing this player's information.
      */
     public PlayerData getPlayerData() {
-        return new PlayerData(getUsername(), stats.getLevel());
+        Map<String, String> inventoryMap = new HashMap<>();
+        BinaryTagIO.Writer writer = BinaryTagIO.writer();
+        for(int slot = 0; slot < inventory.getSize(); slot++) {
+            ItemStack slotStack = inventory.getItemStack(slot);
+            if(!slotStack.isAir()) {
+
+                try {
+                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                    writer.write(slotStack.toItemNBT(), stream);
+                    inventoryMap.put(String.valueOf(slot), stream.toString());
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+
+            }
+        }
+
+        return new PlayerData(getUsername(), stats.getLevel(), inventoryMap);
     }
 
     @Override
     public @NotNull Player createPlayer(@NotNull PlayerConnection connection, @NotNull GameProfile gameProfile) {
         String username = gameProfile.name();
-        PlayerData playerData = DuskfallServer.dbConnection.getPlayerData(username);
+        PlayerData playerData = DuskfallServer.dbConnection.loadPlayerData(username);
         return new MmoPlayer(connection, gameProfile, playerData);
     }
 

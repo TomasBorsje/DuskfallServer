@@ -15,6 +15,10 @@ import org.bson.conversions.Bson;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import static com.mongodb.client.model.Filters.eq;
 
 public class DatabaseConnection {
@@ -34,19 +38,31 @@ public class DatabaseConnection {
         mmoDatabase = client.getDatabase("mmo");
     }
 
-    public @NotNull PlayerData getPlayerData(String username) {
+    public @NotNull PlayerData loadPlayerData(String username) {
         Document playerDoc = getPlayerDocument(username);
 
         DuskfallServer.logger.info("Getting player data for username {}!", username);
 
-        if(playerDoc == null) {
-            return new PlayerData(username, 1);
+        if (playerDoc == null) {
+            return new PlayerData(username);
         }
 
         // Read fields
         int level = playerDoc.getInteger("level");
+        Document inventoryDoc = playerDoc.get("inventory", Document.class);
 
-        return new PlayerData(username, level);
+        Map<String, String> inventory = new HashMap<>(); // Empty inv by default
+        if(inventoryDoc != null) {
+            // Read item stacks
+            inventory = inventoryDoc.entrySet()
+                    .stream()
+                    .collect(Collectors.toMap(
+                            Map.Entry::getKey,
+                            entry -> (String) entry.getValue()
+                    ));
+        }
+
+        return new PlayerData(username, level, inventory);
     }
 
     public void savePlayerData(PlayerData playerData) {
@@ -54,6 +70,7 @@ public class DatabaseConnection {
 
         doc.put("username", playerData.username);
         doc.put("level", playerData.level);
+        doc.put("inventory", playerData.inventoryItems);
 
         Bson query = eq("username", playerData.username);
 
