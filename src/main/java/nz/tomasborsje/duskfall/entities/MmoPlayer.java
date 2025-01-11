@@ -40,10 +40,9 @@ public class MmoPlayer extends Player implements PlayerProvider, MmoEntity {
     public MmoPlayer(@NotNull PlayerConnection playerConnection, @NotNull GameProfile gameProfile, @NotNull PlayerData data) {
         super(playerConnection, gameProfile);
 
-        // Populate inventory
+        // Populate inventory with items from playerdata TODO: Remove glitched items
         BinaryTagIO.Reader reader = BinaryTagIO.reader();
-        // Populate inventory with items from playerdata
-        for(Map.Entry<String, String> entry : data.inventoryItems.entrySet()) {
+        for (Map.Entry<String, String> entry : data.inventoryItems.entrySet()) {
             try {
                 int slot = Integer.parseInt(entry.getKey());
                 ItemStack stack = ItemStack.fromItemNBT(reader.read(IOUtils.toInputStream(entry.getValue())));
@@ -75,7 +74,7 @@ public class MmoPlayer extends Player implements PlayerProvider, MmoEntity {
         // TODO: Decide when stats are outdated (item equip, buff added, damage taken, etc.)
         shouldRecalculateStats = true;
         // If our current stats are outdated, recalculate
-        if(shouldRecalculateStats) {
+        if (shouldRecalculateStats) {
             stats.recalculateStats();
             this.setLevel(stats.getLevel());
             shouldRecalculateStats = false;
@@ -91,11 +90,11 @@ public class MmoPlayer extends Player implements PlayerProvider, MmoEntity {
     public void hurt(DamageInstance damageInstance) {
         int damageTaken = stats.takeDamage(damageInstance.type, damageInstance.amount);
         // If we took actual damage - note damage taken is 0 if we're already dead
-        if(damageTaken >= 0) {
+        if (damageTaken >= 0) {
             // Cosmetic hurt effect
             this.damage(DamageType.GENERIC, 0.01f);
 
-            if(stats.isDead()) {
+            if (stats.isDead()) {
                 kill(damageInstance);
             }
         }
@@ -118,7 +117,7 @@ public class MmoPlayer extends Player implements PlayerProvider, MmoEntity {
     @Override
     public void addBuff(@NotNull Buff newBuff) {
         // Replace buff if it exists, and should be replaced
-        if(newBuff.shouldReplaceExisting()) {
+        if (newBuff.shouldReplaceExisting()) {
             buffs.removeIf(buff -> buff.getId().equals(newBuff.getId()));
         }
         buffs.add(newBuff);
@@ -129,44 +128,44 @@ public class MmoPlayer extends Player implements PlayerProvider, MmoEntity {
      * Increases the player's level and fully restores their health and mana.
      */
     public void levelUp() {
-        stats.setLevel(stats.getLevel()+1);
+        stats.setLevel(stats.getLevel() + 1);
         stats.recalculateStats();
         stats.healToFull();
 
         playSound(Sounds.LEVEL_UP);
-        sendMessage(Component.text("You have reached level "+stats.getLevel()+"!", NamedTextColor.GOLD));
+        sendMessage(Component.text("You have reached level " + stats.getLevel() + "!", NamedTextColor.GOLD));
     }
 
     /**
      * Grant an ItemStack to the player with the specified item gain reason.
      * A chat message will be displayed informing the player of the item they received.
      * If the player's inventory is full, they will receive the item in the mail instead.
+     *
      * @param itemStack The item stack to grant
-     * @param reason The reason they are receiving this item stack
+     * @param reason    The reason they are receiving this item stack
      */
     public void giveItem(ItemStack itemStack, ItemGainReason reason) {
         // Add item to inventory
         boolean addedSuccessfully = inventory.addItemStack(itemStack);
 
-        if(!addedSuccessfully) {
+        if (!addedSuccessfully) {
             // TODO: Send to mailbox instead, etc.
-        }
-        else {
+        } else {
             Component itemName = itemStack.get(ItemComponent.CUSTOM_NAME);
-            if(itemName == null) { itemName = Component.text("null"); }
+            if (itemName == null) {
+                itemName = Component.text("null");
+            }
 
             // Append lore lines
             Component hoverText = itemName.appendNewline();
             List<Component> lore = itemStack.get(ItemComponent.LORE);
-            if(lore != null) {
-                for(Component loreLine : lore) {
+            if (lore != null) {
+                for (Component loreLine : lore) {
                     hoverText = hoverText.append(loreLine);
                 }
             }
             // Show message in chat informing player of item gain
-            sendMessage(Component.text("You "+reason.gainVerb +" ", NamedTextColor.GRAY)
-                    .append(Component.text(itemStack.amount()+"x ", NamedTextColor.WHITE))
-                    .append(itemName).hoverEvent(hoverText) // Show item description on hover
+            sendMessage(Component.text("You " + reason.gainVerb + " ", NamedTextColor.GRAY).append(Component.text(itemStack.amount() + "x ", NamedTextColor.WHITE)).append(itemName).hoverEvent(hoverText) // Show item description on hover
                     .append(Component.text(".", NamedTextColor.GRAY)));
 
             // Play sound
@@ -175,15 +174,14 @@ public class MmoPlayer extends Player implements PlayerProvider, MmoEntity {
     }
 
     /**
-     * Renders and updates the player's MMO HUD (health bar, stats above hotbar, scoreboard, etc.).
+     * Renders and updates the player's MMO HUD (health bar, stats above hot-bar, scoreboard, etc.).
      */
     private void renderPlayerUi() {
         // Set health bar to display player health
-        setHealth(stats.getCurrentHealth()/(float)stats.getMaxHealth() * 19 + 1); // TODO: Interrupt play out packet?
+        setHealth(stats.getCurrentHealth() / (float) stats.getMaxHealth() * 19 + 1); // TODO: Interrupt play out packet?
 
         // Show health to player
-        Component healthBar = Component.text("\u2764 ", NamedTextColor.RED)
-                .append(Component.text(stats.getCurrentHealth() + " / " + stats.getMaxHealth() + " Melee: " + stats.getMeleeDamage(), NamedTextColor.WHITE));
+        Component healthBar = Component.text(TextIcons.HEART+" ", NamedTextColor.RED).append(Component.text(stats.getCurrentHealth() + " / " + stats.getMaxHealth() + " Melee: " + stats.getMeleeDamage(), NamedTextColor.WHITE));
         sendActionBar(healthBar);
     }
 
@@ -193,10 +191,10 @@ public class MmoPlayer extends Player implements PlayerProvider, MmoEntity {
         List<StatModifier> list = new ArrayList<>(5);
 
         // Get stat modifiers from all itemstacks
-        ItemBasedStatModifier helmetModifier = new ItemBasedStatModifier(inventory.getEquipment(EquipmentSlot.HELMET, (byte)0));
-        ItemBasedStatModifier chestplateModifier = new ItemBasedStatModifier(inventory.getEquipment(EquipmentSlot.CHESTPLATE, (byte)0));
-        ItemBasedStatModifier leggingsModifier = new ItemBasedStatModifier(inventory.getEquipment(EquipmentSlot.LEGGINGS, (byte)0));
-        ItemBasedStatModifier bootsModifier = new ItemBasedStatModifier(inventory.getEquipment(EquipmentSlot.BOOTS, (byte)0));
+        ItemBasedStatModifier helmetModifier = new ItemBasedStatModifier(inventory.getEquipment(EquipmentSlot.HELMET, (byte) 0));
+        ItemBasedStatModifier chestplateModifier = new ItemBasedStatModifier(inventory.getEquipment(EquipmentSlot.CHESTPLATE, (byte) 0));
+        ItemBasedStatModifier leggingsModifier = new ItemBasedStatModifier(inventory.getEquipment(EquipmentSlot.LEGGINGS, (byte) 0));
+        ItemBasedStatModifier bootsModifier = new ItemBasedStatModifier(inventory.getEquipment(EquipmentSlot.BOOTS, (byte) 0));
         ItemBasedStatModifier heldModifier = new ItemBasedStatModifier(inventory.getItemStack(getHeldSlot()));
         list.add(helmetModifier);
         list.add(chestplateModifier);
@@ -205,10 +203,7 @@ public class MmoPlayer extends Player implements PlayerProvider, MmoEntity {
         list.add(heldModifier);
 
         // Add all stat modifying buffs
-        list.addAll(buffs.stream()
-                .filter(StatModifier.class::isInstance)
-                .map(StatModifier.class::cast)
-                .toList());
+        list.addAll(buffs.stream().filter(StatModifier.class::isInstance).map(StatModifier.class::cast).toList());
 
         return list;
     }
@@ -216,7 +211,7 @@ public class MmoPlayer extends Player implements PlayerProvider, MmoEntity {
     @Override
     public @NotNull StatContainer getStats() {
         // If our current stats are outdated, recalculate
-        if(shouldRecalculateStats) {
+        if (shouldRecalculateStats) {
             stats.recalculateStats();
             shouldRecalculateStats = false;
         }
@@ -231,10 +226,10 @@ public class MmoPlayer extends Player implements PlayerProvider, MmoEntity {
     public PlayerData getPlayerData() {
         Map<String, String> inventoryMap = new HashMap<>();
         BinaryTagIO.Writer writer = BinaryTagIO.writer();
-        for(int slot = 0; slot < inventory.getSize(); slot++) {
+        for (int slot = 0; slot < inventory.getSize(); slot++) {
             ItemStack slotStack = inventory.getItemStack(slot);
-            if(!slotStack.isAir()) {
 
+            if (!slotStack.isAir()) {
                 try {
                     ByteArrayOutputStream stream = new ByteArrayOutputStream();
                     writer.write(slotStack.toItemNBT(), stream);
@@ -242,10 +237,8 @@ public class MmoPlayer extends Player implements PlayerProvider, MmoEntity {
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
-
             }
         }
-
         return new PlayerData(getUsername(), stats.getLevel(), inventoryMap);
     }
 

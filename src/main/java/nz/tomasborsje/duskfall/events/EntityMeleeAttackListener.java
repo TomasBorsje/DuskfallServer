@@ -19,15 +19,21 @@ public class EntityMeleeAttackListener implements EventListener<EntityAttackEven
     @NotNull
     @Override
     public Result run(@NotNull EntityAttackEvent event) {
-        if(event.getTarget() instanceof MmoEntity victim && event.getEntity() instanceof MmoEntity attacker) {
+        if(event.getTarget() instanceof MmoEntity victim
+                && event.getEntity() instanceof MmoEntity attacker
+                && !attacker.getStats().isDead()) {
 
             victim.hurt(new DamageInstance(
                     MmoDamageCause.ENTITY_ATTACK,
                     MmoDamageType.PHYSICAL,
-                    (MmoEntity) event.getEntity(),
+                    attacker,
                     attacker.getStats().getMeleeDamage()));
 
-            DuskfallServer.logger.info(event.getTarget().getClass().getSimpleName()+" with level "+victim.getStats().getLevel()+" was struck for "+attacker.getStats().getMeleeDamage()+"! They are "+victim.getStats().getCurrentHealth()+" hp");
+            DuskfallServer.logger.info("{} with level {} was struck for {}! They are {} hp",
+                    event.getTarget().getClass().getSimpleName(),
+                    victim.getStats().getLevel(),
+                    attacker.getStats().getMeleeDamage(),
+                    victim.getStats().getCurrentHealth());
         }
         return Result.SUCCESS;
     }

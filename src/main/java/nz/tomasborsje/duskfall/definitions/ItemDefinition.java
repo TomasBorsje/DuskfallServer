@@ -3,6 +3,7 @@ package nz.tomasborsje.duskfall.definitions;
 import com.google.gson.annotations.SerializedName;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.minestom.server.item.ItemComponent;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
 import net.minestom.server.utils.NamespaceID;
@@ -51,6 +52,7 @@ public class ItemDefinition {
                 .glowing()
                 .customName(Component.text(name, rarity.nameStyle))
                 .lore(Component.text(description, NamedTextColor.AQUA))
+                .set(ItemComponent.CUSTOM_MODEL_DATA, getId().toLowerCase().hashCode() % 1_000_000)
                 .build();
     }
 

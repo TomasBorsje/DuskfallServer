@@ -18,6 +18,7 @@ import nz.tomasborsje.duskfall.entities.MmoPlayer;
 import nz.tomasborsje.duskfall.database.DatabaseConnection;
 import nz.tomasborsje.duskfall.events.*;
 import nz.tomasborsje.duskfall.registry.ItemRegistry;
+import nz.tomasborsje.duskfall.util.ResourcePackGen;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,7 +43,9 @@ public class DuskfallServer {
         ((LoggerContext) LoggerFactory.getILoggerFactory()).getLogger("org.mongodb.driver").setLevel(Level.ERROR);
 
         // Parse item definitions
-        ItemRegistry.LoadItemDefinitions(new File("items"));
+        ItemRegistry.LoadItemDefinitions(new File("data", "items"));
+
+        ResourcePackGen.GenerateResourcePack();
 
         // Connect to DB
         dbConnection = new DatabaseConnection(System.getenv("MMO_DATABASE_CONNECTION_STRING"));

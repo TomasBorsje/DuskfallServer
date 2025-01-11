@@ -107,11 +107,11 @@ public class MmoCreature extends EntityCreature implements MmoEntity {
 
     @Override
     public void kill(DamageInstance killingBlow) {
-
         // TODO: Acquirable instead to avoid concurrent modification exception
-        // Remove all buffs
-        buffs.forEach(buff -> buff.onOwnerDie(killingBlow));
-        buffs.clear();
+        acquirable().sync(entity -> {
+            buffs.forEach(buff -> buff.onOwnerDie(killingBlow));
+            buffs.clear();
+        });
 
         if (killingBlow.owner instanceof MmoPlayer player) {
             // If a player killed me, send them loot
