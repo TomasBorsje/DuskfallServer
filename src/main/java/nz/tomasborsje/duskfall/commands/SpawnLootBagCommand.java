@@ -2,10 +2,9 @@ package nz.tomasborsje.duskfall.commands;
 
 import net.minestom.server.command.builder.Command;
 import net.minestom.server.command.builder.arguments.ArgumentType;
-import net.minestom.server.entity.Entity;
-import net.minestom.server.entity.LivingEntity;
 import nz.tomasborsje.duskfall.DuskfallServer;
 import nz.tomasborsje.duskfall.entities.LootBagEntity;
+import nz.tomasborsje.duskfall.entities.MmoPlayer;
 import nz.tomasborsje.duskfall.registry.ItemRegistry;
 
 public class SpawnLootBagCommand extends Command {
@@ -28,11 +27,11 @@ public class SpawnLootBagCommand extends Command {
         addSyntax((sender, context) -> {
             final String lootTableId = context.get(lootTableIdArg);
 
-            if(sender instanceof LivingEntity livingEntity) {
-                Entity blockDisplay = new LootBagEntity(DuskfallServer.overworldInstance, livingEntity.getPosition(),
+            if(sender instanceof MmoPlayer player) {
+                LootBagEntity blockDisplay = new LootBagEntity(player, player.getPosition(),
                         ItemRegistry.GetRandomItem().buildItemStack(), ItemRegistry.GetRandomItem().buildItemStack(), ItemRegistry.GetRandomItem().buildItemStack());
 
-                blockDisplay.setInstance(DuskfallServer.overworldInstance, livingEntity.getPosition());
+                blockDisplay.setInstance(DuskfallServer.overworldInstance, player.getPosition());
             }
         }, lootTableIdArg);
     }

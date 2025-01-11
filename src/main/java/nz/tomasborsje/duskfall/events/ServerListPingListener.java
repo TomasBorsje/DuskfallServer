@@ -18,10 +18,10 @@ import java.util.Base64;
 public class ServerListPingListener implements EventListener<ServerListPingEvent> {
 
     private static final Component motdTopLine =
-            Component.text(StringUtils.center("Duskfall", 45-"v0.0.1".length()), NamedTextColor.LIGHT_PURPLE, TextDecoration.BOLD)
+            Component.text(StringUtils.center("Duskfall", 43), NamedTextColor.LIGHT_PURPLE, TextDecoration.BOLD)
             .append(Component.text("v0.0.1", Style.style().color(NamedTextColor.WHITE).decoration(TextDecoration.BOLD, false).build()))
             .appendNewline()
-            .append(Component.text(StringUtils.center("-- Dev Test --", 45), NamedTextColor.BLUE));
+            .append(Component.text(StringUtils.center("-- Dev Test --", 49), NamedTextColor.BLUE));
 
     private final String serverIconBase64;
 

@@ -1,7 +1,5 @@
 package nz.tomasborsje.duskfall.entities;
 
-import net.kyori.adventure.key.Key;
-import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.minestom.server.coordinate.Pos;
@@ -18,6 +16,7 @@ import nz.tomasborsje.duskfall.DuskfallServer;
 import nz.tomasborsje.duskfall.buffs.Buff;
 import nz.tomasborsje.duskfall.core.*;
 import nz.tomasborsje.duskfall.database.PlayerData;
+import nz.tomasborsje.duskfall.sounds.Sounds;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -61,16 +60,10 @@ public class MmoPlayer extends Player implements PlayerProvider, MmoEntity {
             shouldRecalculateStats = false;
         }
 
-        // Set health bar to display player health
-        setHealth(stats.getCurrentHealth()/(float)stats.getMaxHealth() * 19 + 1); // TODO: Interrupt play out packet?
-
         // Health regen (1/tick)
         stats.gainHealth(1);
 
-        // Show health to player
-        Component healthBar = Component.text("\u2764 ", NamedTextColor.RED)
-                .append(Component.text(stats.getCurrentHealth() + " / " + stats.getMaxHealth() + " Melee: " + stats.getMeleeDamage(), NamedTextColor.WHITE));
-        sendActionBar(healthBar);
+        renderPlayerUi();
     }
 
     @Override
@@ -119,12 +112,17 @@ public class MmoPlayer extends Player implements PlayerProvider, MmoEntity {
         stats.recalculateStats();
         stats.healToFull();
 
-        Sound sound = Sound.sound().type(Key.key("ui.toast.challenge_complete")).build();
-
-        playSound(sound);
+        playSound(Sounds.LEVEL_UP);
         sendMessage(Component.text("You have reached level "+stats.getLevel()+"!", NamedTextColor.GOLD));
     }
 
+    /**
+     * Grant an ItemStack to the player with the specified item gain reason.
+     * A chat message will be displayed informing the player of the item they received.
+     * If the player's inventory is full, they will receive the item in the mail instead.
+     * @param itemStack The item stack to grant
+     * @param reason The reason they are receiving this item stack
+     */
     public void giveItem(ItemStack itemStack, ItemGainReason reason) {
         // Add item to inventory
         boolean addedSuccessfully = inventory.addItemStack(itemStack);
@@ -149,7 +147,23 @@ public class MmoPlayer extends Player implements PlayerProvider, MmoEntity {
                     .append(Component.text(itemStack.amount()+"x ", NamedTextColor.WHITE))
                     .append(itemName).hoverEvent(hoverText) // Show item description on hover
                     .append(Component.text(".", NamedTextColor.GRAY)));
+
+            // Play sound
+            playSound(Sounds.LOOT_BAG_RUSTLE);
         }
+    }
+
+    /**
+     * Renders and updates the player's MMO HUD (health bar, stats above hotbar, scoreboard, etc.).
+     */
+    private void renderPlayerUi() {
+        // Set health bar to display player health
+        setHealth(stats.getCurrentHealth()/(float)stats.getMaxHealth() * 19 + 1); // TODO: Interrupt play out packet?
+
+        // Show health to player
+        Component healthBar = Component.text("\u2764 ", NamedTextColor.RED)
+                .append(Component.text(stats.getCurrentHealth() + " / " + stats.getMaxHealth() + " Melee: " + stats.getMeleeDamage(), NamedTextColor.WHITE));
+        sendActionBar(healthBar);
     }
 
     @Override
