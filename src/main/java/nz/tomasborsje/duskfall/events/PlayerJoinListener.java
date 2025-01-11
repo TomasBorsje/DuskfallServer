@@ -3,13 +3,11 @@ package nz.tomasborsje.duskfall.events;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.minestom.server.coordinate.Pos;
-import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.Player;
 import net.minestom.server.event.EventListener;
 import net.minestom.server.event.player.AsyncPlayerConfigurationEvent;
 import nz.tomasborsje.duskfall.DuskfallServer;
-import nz.tomasborsje.duskfall.core.MmoPlayer;
-import nz.tomasborsje.duskfall.database.PlayerData;
+import nz.tomasborsje.duskfall.entities.MmoPlayer;
 import org.jetbrains.annotations.NotNull;
 
 /**

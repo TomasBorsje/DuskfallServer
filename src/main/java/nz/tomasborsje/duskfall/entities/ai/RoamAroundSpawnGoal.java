@@ -3,7 +3,7 @@ package nz.tomasborsje.duskfall.entities.ai;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.coordinate.Vec;
 import net.minestom.server.entity.ai.GoalSelector;
-import nz.tomasborsje.duskfall.core.MmoCreature;
+import nz.tomasborsje.duskfall.entities.MmoCreature;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;

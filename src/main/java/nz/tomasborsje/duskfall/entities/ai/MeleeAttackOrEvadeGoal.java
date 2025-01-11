@@ -11,7 +11,7 @@ import net.minestom.server.entity.pathfinding.Navigator;
 import net.minestom.server.utils.NamespaceID;
 import net.minestom.server.utils.time.Cooldown;
 import net.minestom.server.utils.time.TimeUnit;
-import nz.tomasborsje.duskfall.core.MmoCreature;
+import nz.tomasborsje.duskfall.entities.MmoCreature;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.Duration;

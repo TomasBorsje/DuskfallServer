@@ -1,4 +1,4 @@
-package nz.tomasborsje.duskfall.core;
+package nz.tomasborsje.duskfall.entities;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -13,6 +13,7 @@ import net.minestom.server.item.ItemStack;
 import net.minestom.server.utils.time.TimeUnit;
 import nz.tomasborsje.duskfall.DuskfallServer;
 import nz.tomasborsje.duskfall.buffs.Buff;
+import nz.tomasborsje.duskfall.core.*;
 import nz.tomasborsje.duskfall.entities.ai.EntityCurrentTarget;
 import nz.tomasborsje.duskfall.entities.ai.MeleeAttackOrEvadeGoal;
 import nz.tomasborsje.duskfall.entities.ai.RoamAroundSpawnGoal;

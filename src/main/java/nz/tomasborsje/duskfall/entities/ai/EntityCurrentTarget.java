@@ -2,7 +2,7 @@ package nz.tomasborsje.duskfall.entities.ai;
 
 import net.minestom.server.entity.Entity;
 import net.minestom.server.entity.ai.TargetSelector;
-import nz.tomasborsje.duskfall.core.MmoCreature;
+import nz.tomasborsje.duskfall.entities.MmoCreature;
 import org.jetbrains.annotations.NotNull;
 
 public class EntityCurrentTarget extends TargetSelector {

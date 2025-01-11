@@ -3,7 +3,7 @@ package nz.tomasborsje.duskfall.events;
 import net.minestom.server.event.EventListener;
 import net.minestom.server.event.player.PlayerDisconnectEvent;
 import nz.tomasborsje.duskfall.DuskfallServer;
-import nz.tomasborsje.duskfall.core.MmoPlayer;
+import nz.tomasborsje.duskfall.entities.MmoPlayer;
 import nz.tomasborsje.duskfall.database.PlayerData;
 import org.jetbrains.annotations.NotNull;
 

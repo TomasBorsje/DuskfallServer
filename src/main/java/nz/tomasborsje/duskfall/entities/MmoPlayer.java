@@ -1,4 +1,4 @@
-package nz.tomasborsje.duskfall.core;
+package nz.tomasborsje.duskfall.entities;
 
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
@@ -16,6 +16,7 @@ import net.minestom.server.network.player.GameProfile;
 import net.minestom.server.network.player.PlayerConnection;
 import nz.tomasborsje.duskfall.DuskfallServer;
 import nz.tomasborsje.duskfall.buffs.Buff;
+import nz.tomasborsje.duskfall.core.*;
 import nz.tomasborsje.duskfall.database.PlayerData;
 import org.jetbrains.annotations.NotNull;
 

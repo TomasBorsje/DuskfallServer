@@ -1,5 +1,7 @@
 package nz.tomasborsje.duskfall.core;
 
+import nz.tomasborsje.duskfall.entities.MmoEntity;
+
 /**
  * Container class that holds all stats an MMO entity can have.
  * Note that this class is the low-level stat values, and modifiers like damage increases aren't applied here.

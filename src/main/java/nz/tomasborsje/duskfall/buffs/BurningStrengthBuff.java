@@ -1,6 +1,7 @@
 package nz.tomasborsje.duskfall.buffs;
 
 import nz.tomasborsje.duskfall.core.*;
+import nz.tomasborsje.duskfall.entities.MmoEntity;
 import org.jetbrains.annotations.NotNull;
 
 /**

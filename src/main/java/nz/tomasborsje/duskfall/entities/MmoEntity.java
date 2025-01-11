@@ -1,7 +1,10 @@
-package nz.tomasborsje.duskfall.core;
+package nz.tomasborsje.duskfall.entities;
 
 import net.minestom.server.entity.Entity;
 import nz.tomasborsje.duskfall.buffs.Buff;
+import nz.tomasborsje.duskfall.core.DamageInstance;
+import nz.tomasborsje.duskfall.core.StatContainer;
+import nz.tomasborsje.duskfall.core.StatModifier;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;

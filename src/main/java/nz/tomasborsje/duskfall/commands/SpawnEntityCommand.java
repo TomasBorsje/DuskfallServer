@@ -7,8 +7,8 @@ import net.minestom.server.entity.EntityType;
 import nz.tomasborsje.duskfall.DuskfallServer;
 import nz.tomasborsje.duskfall.buffs.Buff;
 import nz.tomasborsje.duskfall.buffs.BurningStrengthBuff;
-import nz.tomasborsje.duskfall.core.MmoCreature;
-import nz.tomasborsje.duskfall.core.MmoEntity;
+import nz.tomasborsje.duskfall.entities.MmoCreature;
+import nz.tomasborsje.duskfall.entities.MmoEntity;
 
 public class SpawnEntityCommand extends Command {
 

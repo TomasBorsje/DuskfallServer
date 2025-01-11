@@ -4,6 +4,7 @@ import net.minestom.server.event.EventListener;
 import net.minestom.server.event.entity.EntityAttackEvent;
 import nz.tomasborsje.duskfall.DuskfallServer;
 import nz.tomasborsje.duskfall.core.*;
+import nz.tomasborsje.duskfall.entities.MmoEntity;
 import org.jetbrains.annotations.NotNull;
 
 /**

@@ -1,5 +1,6 @@
 package nz.tomasborsje.duskfall.core;
 
+import nz.tomasborsje.duskfall.entities.MmoEntity;
 import org.jetbrains.annotations.Nullable;
 
 public class DamageInstance {
