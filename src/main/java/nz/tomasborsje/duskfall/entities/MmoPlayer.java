@@ -53,7 +53,6 @@ public class MmoPlayer extends Player implements PlayerProvider, MmoEntity {
         }
 
         stats = new StatContainer(this, data.level);
-
         DuskfallServer.logger.info("Player object created with loaded level {}", stats.getLevel());
     }
 

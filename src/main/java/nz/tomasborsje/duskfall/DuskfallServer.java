@@ -18,7 +18,7 @@ import nz.tomasborsje.duskfall.entities.MmoPlayer;
 import nz.tomasborsje.duskfall.database.DatabaseConnection;
 import nz.tomasborsje.duskfall.events.*;
 import nz.tomasborsje.duskfall.registry.ItemRegistry;
-import nz.tomasborsje.duskfall.util.ResourcePackGen;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,10 +34,11 @@ public class DuskfallServer {
     public static MinecraftServer server;
     public static InstanceManager instanceManager;
     public static InstanceContainer overworldInstance;
+    public static @NotNull GlobalEventHandler eventHandler;
 
 
     public static void main(String[] args) {
-        Thread.setDefaultUncaughtExceptionHandler(DuskfallServer::handleUncaughtException);
+        //Thread.setDefaultUncaughtExceptionHandler(DuskfallServer::handleUncaughtException);
 
         // Set MongoDB logger to error so it doesn't spam
         ((LoggerContext) LoggerFactory.getILoggerFactory()).getLogger("org.mongodb.driver").setLevel(Level.ERROR);
@@ -45,15 +46,15 @@ public class DuskfallServer {
         // Parse item definitions
         ItemRegistry.LoadItemDefinitions(new File("data", "items"));
 
-        ResourcePackGen.GenerateResourcePack();
+        //ResourcePackGen.GenerateResourcePack();
 
         // Connect to DB
         dbConnection = new DatabaseConnection(System.getenv("MMO_DATABASE_CONNECTION_STRING"));
-
         // Initialize the server
         server = MinecraftServer.init();
 
         instanceManager = MinecraftServer.getInstanceManager();
+        eventHandler = MinecraftServer.getGlobalEventHandler();
         overworldInstance = instanceManager.createInstanceContainer();
 
         // TODO: Configure the Overworld instance
@@ -79,7 +80,7 @@ public class DuskfallServer {
 
         // Finally, start the server
         logger.info("Starting server!");
-        server.start("0.0.0.0", 25565);
+        server.start("127.0.0.1", 44644);
         preloadChunks();
         logger.info("--------------");
     }

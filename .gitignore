@@ -42,3 +42,7 @@ bin/
 .DS_Store
 /server/worlds/
 /.idea/
+/server/DuskfallResourcePack/
+/server/DuskfallResourcePack.zip
+/server/DuskfallServer-1.0-SNAPSHOT.jar
+/server/log.txt
