@@ -1,5 +1,6 @@
 package nz.tomasborsje.duskfall.commands;
 
+import net.kyori.adventure.text.Component;
 import net.minestom.server.command.builder.Command;
 import net.minestom.server.command.builder.arguments.ArgumentType;
 import nz.tomasborsje.duskfall.DuskfallServer;
@@ -28,7 +29,7 @@ public class SpawnLootBagCommand extends Command {
             final String lootTableId = context.get(lootTableIdArg);
 
             if(sender instanceof MmoPlayer player) {
-                LootBagEntity blockDisplay = new LootBagEntity(player, player.getPosition(),
+                LootBagEntity blockDisplay = new LootBagEntity(player, player.getPosition(), Component.text("Loot Bag - "+lootTableId),
                         ItemRegistry.GetRandomItem().buildItemStack(), ItemRegistry.GetRandomItem().buildItemStack(), ItemRegistry.GetRandomItem().buildItemStack());
 
                 blockDisplay.setInstance(DuskfallServer.overworldInstance, player.getPosition());

@@ -36,10 +36,10 @@ public class LootBagEntity extends Entity implements InteractableEntity {
     private final Inventory lootScreen;
     private final EventNode<InventoryEvent> lootScreenEventHandler;
 
-    public LootBagEntity(MmoPlayer player, Pos spawnPos, ItemStack... itemStacks) {
+    public LootBagEntity(MmoPlayer player, Pos spawnPos, Component title, ItemStack... itemStacks) {
         super(EntityType.INTERACTION);
 
-        setNoGravity(true);
+
         InteractionMeta meta = ((InteractionMeta)entityMeta);
         meta.setNotifyAboutChanges(false);
         meta.setWidth(SCALE);
@@ -49,8 +49,11 @@ public class LootBagEntity extends Entity implements InteractableEntity {
 
         viewers.clear();
 
-        // Spawn display block entity as well
+        // Spawn display block entity
         displayEntity = new Entity(EntityType.BLOCK_DISPLAY);
+
+        // TODO: Re-enable gravity on both entities once the hitboxes line up - may need to set translation on display
+        setNoGravity(true);
         displayEntity.setNoGravity(true);
 
         BlockDisplayMeta displayMeta = (BlockDisplayMeta) displayEntity.getEntityMeta();
@@ -63,7 +66,7 @@ public class LootBagEntity extends Entity implements InteractableEntity {
         });
 
         // Init inventory and event handlers
-        lootScreen = new Inventory(InventoryType.CHEST_2_ROW, Component.text("Loot Bag"));
+        lootScreen = new Inventory(InventoryType.CHEST_2_ROW, title);
         lootScreenEventHandler = EventNode.type("click_loot_screen", EventFilter.INVENTORY, (event, inv) -> inv == lootScreen)
                 .addListener(InventoryClickEvent.class, this::onPlayerClickLootScreenSlot)
                 .addListener(InventoryCloseEvent.class, this::onPlayerCloseLootScreen);
@@ -118,6 +121,21 @@ public class LootBagEntity extends Entity implements InteractableEntity {
         }
         // Remove item from loot screen
         lootScreen.setItemStack(slot, ItemStack.AIR);
+
+        // If inventory is empty, close screen
+        boolean empty = true;
+        for(ItemStack stack : lootScreen.getItemStacks()) {
+            if(!stack.isAir()) {
+                empty = false;
+                break;
+            }
+        }
+        if(empty) {
+            // TODO: Not working?
+            DuskfallServer.logger.info("Force closing loot screen...");
+            player.closeInventory(true);
+            player.closeInventory();
+        }
     }
 
     /**

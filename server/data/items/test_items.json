@@ -3,7 +3,7 @@
     "def": "buff",
     "id": "shard_of_stamina",
     "name": "Shard of Stamina",
-    "description": "+5 Stamina",
+    "description": "A small shard of citrine, the gem of resilience.",
     "stamina": 50,
     "melee_damage": 50,
     "material": "iron_ingot",
@@ -13,7 +13,7 @@
     "def": "item",
     "id": "shard_of_strength",
     "name": "Shard of Strength",
-    "description": "+78 Strength",
+    "description": "A large shard of ruby, the gem of fury.",
     "material": "leather",
     "rarity": "rare"
   }

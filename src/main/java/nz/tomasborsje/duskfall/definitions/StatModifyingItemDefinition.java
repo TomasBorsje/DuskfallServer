@@ -2,9 +2,15 @@ package nz.tomasborsje.duskfall.definitions;
 
 import com.google.gson.annotations.SerializedName;
 import net.kyori.adventure.nbt.CompoundBinaryTag;
+import net.kyori.adventure.text.Component;
 import net.minestom.server.item.ItemStack;
 import nz.tomasborsje.duskfall.core.ItemStackTags;
 import nz.tomasborsje.duskfall.core.StatModifierTagKeys;
+import nz.tomasborsje.duskfall.core.TooltipLine;
+import nz.tomasborsje.duskfall.core.TooltipPosition;
+import nz.tomasborsje.duskfall.util.MmoStyles;
+
+import java.util.List;
 
 public class StatModifyingItemDefinition extends ItemDefinition {
     @SerializedName("stamina")
@@ -46,15 +52,47 @@ public class StatModifyingItemDefinition extends ItemDefinition {
         return stack.withTag(ItemStackTags.MMO_STAT_MODS, statTag);
     }
 
-    public int getStamina() {
-        return stamina;
-    }
+    @Override
+    protected void addTooltipLines(List<TooltipLine> tooltipLines) {
+        super.addTooltipLines(tooltipLines);
+        // Stat mods
+        boolean statModSpace = false;
+        if (stamina != 0) {
+            statModSpace = true;
+            tooltipLines.add(new TooltipLine(TooltipPosition.STAMINA_MOD, Component.text("+" + stamina + " Stamina", MmoStyles.STAT_MOD_STYLE)));
+        }
+        if (strength != 0) {
+            statModSpace = true;
+            tooltipLines.add(new TooltipLine(TooltipPosition.STRENGTH_MOD, Component.text("+" + strength + " Strength", MmoStyles.STAT_MOD_STYLE)));
+        }
+        if (intellect != 0) {
+            statModSpace = true;
+            tooltipLines.add(new TooltipLine(TooltipPosition.INTELLECT_MOD, Component.text("+" + intellect + " Intellect", MmoStyles.STAT_MOD_STYLE)));
+        }
+        if (focus != 0) {
+            statModSpace = true;
+            tooltipLines.add(new TooltipLine(TooltipPosition.AGILITY_MOD, Component.text("+" + focus + " Focus", MmoStyles.STAT_MOD_STYLE)));
+        }
+        if(statModSpace) {
+            tooltipLines.add(new TooltipLine(TooltipPosition.STAT_MOD_SPACE, Component.text("", MmoStyles.STAT_MOD_STYLE)));
+        }
 
-    public int getStrength() {
-        return strength;
-    }
-
-    public int getIntellect() {
-        return intellect;
+        // Damage buff effects
+        boolean simpleEffectSpace = false;
+        if (meleeDamage != 0) {
+            simpleEffectSpace = true;
+            tooltipLines.add(new TooltipLine(TooltipPosition.SIMPLE_EFFECTS, Component.text("Equip: Gain " + meleeDamage + " attack damage.", MmoStyles.STAT_MOD_STYLE)));
+        }
+        if (bowDamage != 0) {
+            simpleEffectSpace = true;
+            tooltipLines.add(new TooltipLine(TooltipPosition.SIMPLE_EFFECTS, Component.text("Equip: Gain " + bowDamage + " ranged damage.", MmoStyles.STAT_MOD_STYLE)));
+        }
+        if (spellPower != 0) {
+            simpleEffectSpace = true;
+            tooltipLines.add(new TooltipLine(TooltipPosition.SIMPLE_EFFECTS, Component.text("Equip: Gain " + spellPower + " spell damage.", MmoStyles.STAT_MOD_STYLE)));
+        }
+        if(simpleEffectSpace) {
+            tooltipLines.add(new TooltipLine(TooltipPosition.EFFECT_SPACE, Component.text("", MmoStyles.STAT_MOD_STYLE)));
+        }
     }
 }

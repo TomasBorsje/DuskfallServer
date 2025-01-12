@@ -3,6 +3,7 @@ package nz.tomasborsje.duskfall.entities;
 import net.kyori.adventure.nbt.BinaryTagIO;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.Style;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.Entity;
 import net.minestom.server.entity.EquipmentSlot;
@@ -47,8 +48,8 @@ public class MmoPlayer extends Player implements PlayerProvider, MmoEntity {
                 int slot = Integer.parseInt(entry.getKey());
                 ItemStack stack = ItemStack.fromItemNBT(reader.read(IOUtils.toInputStream(entry.getValue())));
                 inventory.setItemStack(slot, stack);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+            } catch (Exception e) {
+                DuskfallServer.logger.error("Could not deserialize item NBT for slot {}: {}", entry.getKey(), e);
             }
         }
 
@@ -86,7 +87,7 @@ public class MmoPlayer extends Player implements PlayerProvider, MmoEntity {
     }
 
     @Override
-    public void hurt(DamageInstance damageInstance) {
+    public void hurt(@NotNull DamageInstance damageInstance) {
         int damageTaken = stats.takeDamage(damageInstance.type, damageInstance.amount);
         // If we took actual damage - note damage taken is 0 if we're already dead
         if (damageTaken >= 0) {
@@ -100,7 +101,7 @@ public class MmoPlayer extends Player implements PlayerProvider, MmoEntity {
     }
 
     @Override
-    public void kill(DamageInstance killingBlow) {
+    public void kill(@NotNull DamageInstance killingBlow) {
         // Remove buffs
         buffs.forEach(buff -> buff.onOwnerDie(killingBlow));
         buffs.clear();
@@ -152,7 +153,7 @@ public class MmoPlayer extends Player implements PlayerProvider, MmoEntity {
         } else {
             Component itemName = itemStack.get(ItemComponent.CUSTOM_NAME);
             if (itemName == null) {
-                itemName = Component.text("null");
+                itemName = Component.text("null", NamedTextColor.WHITE);
             }
 
             // Append lore lines
@@ -163,8 +164,12 @@ public class MmoPlayer extends Player implements PlayerProvider, MmoEntity {
                     hoverText = hoverText.append(loreLine);
                 }
             }
+
+            Style itemNameStyle = itemName.style();
+            Component itemNameDisplay = Component.text("[", itemNameStyle).append(itemName).append(Component.text("]", itemNameStyle));
+
             // Show message in chat informing player of item gain
-            sendMessage(Component.text("You " + reason.gainVerb + " ", NamedTextColor.GRAY).append(Component.text(itemStack.amount() + "x ", NamedTextColor.WHITE)).append(itemName).hoverEvent(hoverText) // Show item description on hover
+            sendMessage(Component.text("You " + reason.gainVerb + " ", NamedTextColor.GRAY).append(Component.text(itemStack.amount() + "x ", NamedTextColor.WHITE)).append(itemNameDisplay).hoverEvent(hoverText) // Show item description on hover
                     .append(Component.text(".", NamedTextColor.GRAY)));
 
             // Play sound
@@ -205,6 +210,11 @@ public class MmoPlayer extends Player implements PlayerProvider, MmoEntity {
         list.addAll(buffs.stream().filter(StatModifier.class::isInstance).map(StatModifier.class::cast).toList());
 
         return list;
+    }
+
+    @Override
+    public @NotNull String getMmoName() {
+        return getUsername();
     }
 
     @Override

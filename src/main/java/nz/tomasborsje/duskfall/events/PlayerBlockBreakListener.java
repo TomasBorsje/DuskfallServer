@@ -4,7 +4,7 @@ import net.minestom.server.event.EventListener;
 import net.minestom.server.event.player.PlayerBlockBreakEvent;
 import org.jetbrains.annotations.NotNull;
 
-public class BlockBreakListener implements EventListener<PlayerBlockBreakEvent> {
+public class PlayerBlockBreakListener implements EventListener<PlayerBlockBreakEvent> {
 
     @Override
     public @NotNull Class<PlayerBlockBreakEvent> eventType() {

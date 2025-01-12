@@ -4,14 +4,15 @@ import com.google.gson.annotations.SerializedName;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextDecoration;
+import nz.tomasborsje.duskfall.util.MmoStyles;
 
 public enum ItemRarity {
-    @SerializedName("trash") TRASH(Style.style(NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false)),
-    @SerializedName("common") COMMON(Style.style(NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false)),
-    @SerializedName("uncommon") UNCOMMON(Style.style(NamedTextColor.GREEN).decoration(TextDecoration.ITALIC, false)),
-    @SerializedName("rare") RARE(Style.style(NamedTextColor.BLUE).decoration(TextDecoration.ITALIC, false)),
-    @SerializedName("epic") EPIC(Style.style(NamedTextColor.LIGHT_PURPLE).decoration(TextDecoration.ITALIC, false)),
-    @SerializedName("legendary") LEGENDARY(Style.style(NamedTextColor.GOLD).decoration(TextDecoration.ITALIC, false));
+    @SerializedName("trash") TRASH(MmoStyles.WORTHLESS_STYLE),
+    @SerializedName("common") COMMON(MmoStyles.COMMON_STYLE),
+    @SerializedName("uncommon") UNCOMMON(MmoStyles.UNCOMMON_STYLE),
+    @SerializedName("rare") RARE(MmoStyles.RARE_STYLE),
+    @SerializedName("epic") EPIC(MmoStyles.EPIC_STYLE),
+    @SerializedName("legendary") LEGENDARY(MmoStyles.LEGENDARY_STYLE);
 
     public final Style nameStyle;
 

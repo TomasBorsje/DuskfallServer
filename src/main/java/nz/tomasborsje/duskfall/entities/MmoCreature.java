@@ -9,7 +9,6 @@ import net.minestom.server.entity.EntityType;
 import net.minestom.server.entity.attribute.Attribute;
 import net.minestom.server.entity.damage.DamageType;
 import net.minestom.server.entity.metadata.EntityMeta;
-import net.minestom.server.item.ItemStack;
 import net.minestom.server.utils.time.TimeUnit;
 import nz.tomasborsje.duskfall.DuskfallServer;
 import nz.tomasborsje.duskfall.buffs.Buff;
@@ -84,7 +83,7 @@ public class MmoCreature extends EntityCreature implements MmoEntity {
     }
 
     @Override
-    public void hurt(DamageInstance damageInstance) {
+    public void hurt(@NotNull DamageInstance damageInstance) {
         if (!inCombat) {
             enterCombat();
         }
@@ -106,7 +105,7 @@ public class MmoCreature extends EntityCreature implements MmoEntity {
     }
 
     @Override
-    public void kill(DamageInstance killingBlow) {
+    public void kill(@NotNull DamageInstance killingBlow) {
         // TODO: Acquirable instead to avoid concurrent modification exception
         acquirable().sync(entity -> {
             buffs.forEach(buff -> buff.onOwnerDie(killingBlow));
@@ -119,8 +118,8 @@ public class MmoCreature extends EntityCreature implements MmoEntity {
             player.sendMessage("Congrats on killing me (" + getClass().getSimpleName() + "), dude!");
             player.levelUp();
 
-            ItemStack loot = ItemRegistry.GetRandomItem().buildItemStack();
-            player.giveItem(loot, ItemGainReason.LOOT);
+            LootBagEntity lootBag = new LootBagEntity(player, position, Component.text(getMmoName()), ItemRegistry.GetRandomItem().buildItemStack(), ItemRegistry.GetRandomItem().buildItemStack(), ItemRegistry.GetRandomItem().buildItemStack());
+            lootBag.setInstance(instance, position);
         }
         kill();
         inCombat = false;
@@ -141,7 +140,7 @@ public class MmoCreature extends EntityCreature implements MmoEntity {
             buffs.removeIf(buff -> buff.getId().equals(newBuff.getId()));
         }
         buffs.add(newBuff);
-        DuskfallServer.logger.info("Creature gained buff " + newBuff.getId());
+        DuskfallServer.logger.info("Creature gained buff {}", newBuff.getId());
     }
 
     @Override
@@ -155,6 +154,11 @@ public class MmoCreature extends EntityCreature implements MmoEntity {
                 .filter(StatModifier.class::isInstance)
                 .map(StatModifier.class::cast)
                 .toList();
+    }
+
+    @Override
+    public @NotNull String getMmoName() {
+        return entityType.name();
     }
 
     /**
@@ -174,6 +178,7 @@ public class MmoCreature extends EntityCreature implements MmoEntity {
      * @return The component to set the entity's display name to
      */
     protected Component buildDisplayName() {
+        // TODO: Proper entity names
         Component levelDisplay = Component.text("[", NamedTextColor.WHITE).append(Component.text(stats.getLevel(), NamedTextColor.BLUE).append(Component.text("] ", NamedTextColor.WHITE)));
         Component nameDisplay = Component.text("Dangerous Zombie", NamedTextColor.RED).append(Component.text(" (" + stats.getCurrentHealth() + "/" + stats.getMaxHealth() + ")", NamedTextColor.WHITE));
         return levelDisplay.append(nameDisplay);
