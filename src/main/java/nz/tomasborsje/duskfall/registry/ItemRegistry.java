@@ -3,20 +3,18 @@ package nz.tomasborsje.duskfall.registry;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import nz.tomasborsje.duskfall.DuskfallServer;
 import nz.tomasborsje.duskfall.definitions.ItemDefinition;
-import nz.tomasborsje.duskfall.definitions.StatModifyingItemDefinition;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 
 /**
  * Static class that stores item definitions.
+ * TODO: Make this use Supplier<ItemDefinition> for safe mutable instance generation.
  */
 public class ItemRegistry {
     private static final HashMap<String, ItemDefinition> itemRegistry = new HashMap<>();
@@ -42,19 +40,20 @@ public class ItemRegistry {
     public static ItemDefinition Get(String id) {
         // Check the item exists first
         if (!ContainsId(id)) {
-            DuskfallServer.logger.warn("Attempted to get item definition with id " + id + " that doesn't exist!");
+            DuskfallServer.logger.warn("Attempted to get item definition with id {} that doesn't exist!", id);
             return null;
         }
-        return itemRegistry.get(id);
+        return itemRegistry.get(id).clone();
     }
 
     /**
      * Gets all item definitions from the registry.
+     * WARNING: Expensive call, use sparingly.
      *
      * @return An unmodifiable collection of all item definitions.
      */
     public static Collection<ItemDefinition> GetAllItems() {
-        return Collections.unmodifiableCollection(itemRegistry.values());
+        return itemRegistry.values().stream().map(ItemDefinition::clone).toList();
     }
 
     public static boolean ContainsId(String id) {
@@ -63,6 +62,7 @@ public class ItemRegistry {
 
     /**
      * Loads all .json items from the plugin's data folder.
+     * TODO: Deserialize into Supplier<ItemDefinition> objects instead.
      *
      * @param itemDefFolder Folder containing item definitions
      */
@@ -72,12 +72,12 @@ public class ItemRegistry {
                 DuskfallServer.logger.warn("Failed to create /items subfolder!");
             }
         }
-        DuskfallServer.logger.info("Loading item schema from " + itemDefFolder.getAbsolutePath());
+        DuskfallServer.logger.info("Loading item schema from {}", itemDefFolder.getAbsolutePath());
 
         // Get all .json files in the /items subfolder
         File[] itemFiles = itemDefFolder.listFiles((dir, name) -> name.endsWith(".json"));
         assert itemFiles != null;
-        DuskfallServer.logger.info("Number of item def files: " + itemFiles.length);
+        DuskfallServer.logger.info("Number of item def files: {}", itemFiles.length);
 
         // Load each item
         for (File itemFile : itemFiles) {
@@ -94,26 +94,10 @@ public class ItemRegistry {
 
             if (jsonElement.isJsonArray()) {
                 JsonArray jsonArray = jsonElement.getAsJsonArray();
-                DuskfallServer.logger.info("Loading " + jsonArray.size() + " item definitions from " + itemFile.getName());
+                DuskfallServer.logger.info("Loading {} item definitions from {}", jsonArray.size(), itemFile.getName());
 
                 for (JsonElement element : jsonArray) {
-                    JsonObject jsonObject = element.getAsJsonObject();
-
-                    String def = jsonObject.get("def").getAsString();  // Use the 'def' field to get target clas
-                    ItemDefinition itemDefinition;
-
-                    switch (def) {
-                        case "item":
-                            // Deserialize as ItemDefinition
-                            itemDefinition = gson.fromJson(jsonObject, ItemDefinition.class);
-                            break;
-                        case "buff":
-                            itemDefinition = gson.fromJson(jsonObject, StatModifyingItemDefinition.class);
-                            break;
-                        default:
-                            DuskfallServer.logger.warn("Unknown item definition type: " + def);
-                            continue;
-                    }
+                    ItemDefinition itemDefinition = ItemDefinition.deserialize(element.getAsJsonObject());
                     RegisterItem(itemDefinition);
                 }
             } else {

@@ -11,7 +11,7 @@ public class MmoStyles {
             .decoration(TextDecoration.BOLD, false)
             .build();
 
-    public static final Style WORTHLESS_STYLE = Style.style()
+    public static final Style TRASH_STYLE = Style.style()
             .color(NamedTextColor.GRAY)
             .decoration(TextDecoration.ITALIC, false)
             .decoration(TextDecoration.BOLD, false)

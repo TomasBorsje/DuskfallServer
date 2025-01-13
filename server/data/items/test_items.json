@@ -16,5 +16,14 @@
     "description": "A large shard of ruby, the gem of fury.",
     "material": "leather",
     "rarity": "rare"
+  },
+  {
+    "def": "letter",
+    "id": "forgotten_letter",
+    "name": "Forgotten Letter",
+    "message": "The preparations are complete.\nI expect to see you under the next full moon.\nMiss this and you're dead.",
+    "author": "V",
+    "material": "paper",
+    "rarity": "trash"
   }
 ]

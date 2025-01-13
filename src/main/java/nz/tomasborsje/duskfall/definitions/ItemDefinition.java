@@ -1,19 +1,22 @@
 package nz.tomasborsje.duskfall.definitions;
 
+import com.google.common.collect.ImmutableBiMap;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.google.gson.annotations.SerializedName;
+import net.kyori.adventure.nbt.CompoundBinaryTag;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.minestom.server.item.ItemComponent;
 import net.minestom.server.item.ItemStack;
 import net.minestom.server.item.Material;
 import net.minestom.server.utils.NamespaceID;
 import nz.tomasborsje.duskfall.DuskfallServer;
 import nz.tomasborsje.duskfall.core.ItemRarity;
+import nz.tomasborsje.duskfall.core.ItemStackTags;
 import nz.tomasborsje.duskfall.core.TooltipLine;
 import nz.tomasborsje.duskfall.core.TooltipPosition;
 import nz.tomasborsje.duskfall.util.MmoStyles;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.text.WordUtils;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,7 +24,16 @@ import java.util.List;
 /**
  * Represents the immutable definition of an item.
  */
-public class ItemDefinition {
+public class ItemDefinition implements Cloneable {
+    private static final Gson gson = new Gson();
+    private static final ImmutableBiMap<String, Class<? extends ItemDefinition>> defToClassMap;
+    static {
+        defToClassMap = new ImmutableBiMap.Builder<String, Class<? extends ItemDefinition>>()
+                .put("item", ItemDefinition.class)
+                .put("buff", StatModifyingItemDefinition.class)
+                .put("letter", LetterItemDefinition.class)
+                .build();
+    }
 
     /**
      * The ID of the item.
@@ -50,7 +62,7 @@ public class ItemDefinition {
     public ItemStack buildItemStack() {
         Material stackMaterial = Material.fromNamespaceId(new NamespaceID("minecraft", material));
         if(stackMaterial == null || stackMaterial == Material.AIR) {
-            DuskfallServer.logger.error("No material found with ID "+material+"!");
+            DuskfallServer.logger.error("No material found with ID {}!", material);
             return ItemStack.AIR;
         }
 
@@ -65,6 +77,7 @@ public class ItemDefinition {
                 .glowing()
                 .customName(Component.text(name, rarity.nameStyle))
                 .lore(tooltipLines)
+                .set(ItemStackTags.MMO_CORE_DATA, CompoundBinaryTag.builder().putString("id", id).build())
                 .set(ItemComponent.CUSTOM_MODEL_DATA, getId().toLowerCase().hashCode() % 1_000_000)
                 .build();
     }
@@ -74,7 +87,6 @@ public class ItemDefinition {
      * @param tooltipLines The set of tooltip lines to add this item's tooltip lines to.
      */
     protected void addTooltipLines(List<TooltipLine> tooltipLines) {
-        tooltipLines.add(new TooltipLine(TooltipPosition.ITEM_TYPE, Component.text(WordUtils.capitalize(material.replace('_', ' ')), MmoStyles.ITEM_TYPE)));
         if(!description.isEmpty()) {
             tooltipLines.add(new TooltipLine(TooltipPosition.DESCRIPTION_SPACE, Component.text("", MmoStyles.DESCRIPTION)));
             tooltipLines.add(new TooltipLine(TooltipPosition.DESCRIPTION, Component.text(description, MmoStyles.DESCRIPTION)));
@@ -85,20 +97,30 @@ public class ItemDefinition {
         return id;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
     public String getMaterial() {
         return material;
     }
 
-    public ItemRarity getRarity() {
-        return rarity;
+    public static @Nullable ItemDefinition deserialize(JsonObject jsonObject) {
+        String def = jsonObject.get("def").getAsString();  // Use the 'def' field to get target class
+        Class<? extends ItemDefinition> itemDefClass = defToClassMap.get(def);
+
+        if(itemDefClass == null) {
+            DuskfallServer.logger.warn("Tried to deserialize unknown item definition type: {}", def);
+            return null;
+        };
+        return gson.fromJson(jsonObject, itemDefClass);
+    }
+
+    public String serialize() {
+        JsonObject json = gson.toJsonTree(this).getAsJsonObject();
+        String def = defToClassMap.inverse().get(this.getClass());
+        if(def == null) {
+            throw new IllegalArgumentException("Tried to serialize unspecified ItemDefinition class "+this.getClass().getSimpleName());
+        }
+
+        json.addProperty("def", def);
+        return json.toString();
     }
 
     @Override
@@ -110,5 +132,19 @@ public class ItemDefinition {
                 ", material='" + material + '\'' +
                 ", rarity=" + rarity +
                 '}';
+    }
+
+    /**
+     * Clone this ItemDefinition to return a mutable copy.
+     * Subclasses should override this for any fields they need.
+     * @return A mutable copy of this item definition.
+     */
+    @Override
+    public ItemDefinition clone() {
+        try {
+            return (ItemDefinition) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
     }
 }

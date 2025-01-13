@@ -24,6 +24,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -41,12 +42,13 @@ public class MmoPlayer extends Player implements PlayerProvider, MmoEntity {
     public MmoPlayer(@NotNull PlayerConnection playerConnection, @NotNull GameProfile gameProfile, @NotNull PlayerData data) {
         super(playerConnection, gameProfile);
 
-        // Populate inventory with items from playerdata TODO: Remove glitched items
+        // Populate inventory with items from playerdata
+        // TODO: Remove glitched items
         BinaryTagIO.Reader reader = BinaryTagIO.reader();
         for (Map.Entry<String, String> entry : data.inventoryItems.entrySet()) {
             try {
                 int slot = Integer.parseInt(entry.getKey());
-                ItemStack stack = ItemStack.fromItemNBT(reader.read(IOUtils.toInputStream(entry.getValue())));
+                ItemStack stack = ItemStack.fromItemNBT(reader.read(IOUtils.toInputStream(entry.getValue(), Charset.defaultCharset())));
                 inventory.setItemStack(slot, stack);
             } catch (Exception e) {
                 DuskfallServer.logger.error("Could not deserialize item NBT for slot {}: {}", entry.getKey(), e);

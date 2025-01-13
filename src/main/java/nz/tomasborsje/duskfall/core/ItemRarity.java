@@ -1,13 +1,11 @@
 package nz.tomasborsje.duskfall.core;
 
 import com.google.gson.annotations.SerializedName;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
-import net.kyori.adventure.text.format.TextDecoration;
 import nz.tomasborsje.duskfall.util.MmoStyles;
 
 public enum ItemRarity {
-    @SerializedName("trash") TRASH(MmoStyles.WORTHLESS_STYLE),
+    @SerializedName("trash") TRASH(MmoStyles.TRASH_STYLE),
     @SerializedName("common") COMMON(MmoStyles.COMMON_STYLE),
     @SerializedName("uncommon") UNCOMMON(MmoStyles.UNCOMMON_STYLE),
     @SerializedName("rare") RARE(MmoStyles.RARE_STYLE),
