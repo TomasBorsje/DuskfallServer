@@ -71,7 +71,7 @@ public class ItemDefinition implements Cloneable {
         // Get tooltip components
         List<TooltipLine> tooltipItems = new ArrayList<>();
         addTooltipLines(tooltipItems);
-        List<Component> tooltipLines = tooltipItems.stream().sorted().map(TooltipLine::component).toList();
+        List<Component> tooltipLines = tooltipItems.stream().sorted().map(TooltipLine::getComponent).toList();
 
         return ItemStack.builder(stackMaterial)
                 .glowing()

@@ -19,6 +19,7 @@ public class LetterItemDefinition extends ItemDefinition {
     @Override
     protected void addTooltipLines(List<TooltipLine> tooltipLines) {
         super.addTooltipLines(tooltipLines);
+        // TODO: Seems to be in order, but maybe worth enforcing subgroup ordering with a new int in TooltipLine?
         String tooltip = message + "\n\n- "+author;
         for(String str : tooltip.split("(\r\n|\n|\r)")) {
             tooltipLines.add(new TooltipLine(TooltipPosition.LETTER_MESSAGE, Component.text(str, MmoStyles.TRASH_STYLE)));
