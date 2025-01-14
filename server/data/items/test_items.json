@@ -25,5 +25,13 @@
     "author": "V",
     "material": "paper",
     "rarity": "trash"
+  },
+  {
+    "def": "item",
+    "id": "silverleaf",
+    "name": "Silverleaf",
+    "description": "A cool plant model, right?",
+    "material": "gold_ingot",
+    "rarity": "uncommon"
   }
 ]

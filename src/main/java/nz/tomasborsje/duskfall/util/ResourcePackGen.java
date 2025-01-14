@@ -3,6 +3,7 @@ package nz.tomasborsje.duskfall.util;
 import nz.tomasborsje.duskfall.DuskfallServer;
 import nz.tomasborsje.duskfall.definitions.ItemDefinition;
 import nz.tomasborsje.duskfall.registry.ItemRegistry;
+import org.apache.commons.io.FileUtils;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -23,6 +24,12 @@ public class ResourcePackGen {
         File mcOverrideModels = new File(outputFolder, "assets/minecraft/models/item");
         File duskfallModels = new File(outputFolder, "assets/duskfall/models/item");
         File duskfallTextures = new File(outputFolder, "assets/duskfall/textures/item");
+        // Delete pre-existing output dir
+        try {
+            FileUtils.deleteDirectory(outputFolder);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         outputFolder.mkdirs();
         mcOverrideModels.mkdirs();
         duskfallModels.mkdirs();
@@ -37,6 +44,7 @@ public class ResourcePackGen {
             if (!textureFile.exists()) {
                 continue;
             }
+
             // Texture file exists, so track the item and also copy over the texture file
             try {
                 Files.copy(textureFile.toPath(), new File(duskfallTextures, item.getId().toLowerCase() + ".png").toPath(), StandardCopyOption.REPLACE_EXISTING);
@@ -57,23 +65,38 @@ public class ResourcePackGen {
 
             // For all items in this set, create a generic item model stored in duskfall:models/item/id.json
             for (ItemDefinition item : items) {
-                // Create the model json
-                StringBuilder modelJson = new StringBuilder("{\n" +
-                        "  \"parent\": \"item/generated\",\n" +
-                        "  \"textures\": {\n" +
-                        "    \"layer0\": \"duskfall:item/" + item.getId().toLowerCase() + "\"\n" +
-                        "  }\n" +
-                        "}");
+                // Check if model json already exists
+                File modelPath = new File("assets/models/items/" + item.getId().toLowerCase() + ".json");
 
-                // Write the model json to a file
-                try {
-                    File modelFile = new File(outputFolder, "assets/duskfall/models/item/" + item.getId().toLowerCase() + ".json");
-                    modelFile.createNewFile();
-                    FileWriter writer = new FileWriter(modelFile);
-                    writer.write(modelJson.toString());
-                    writer.close();
-                } catch (Exception e) {
-                    e.printStackTrace();
+                // Copy file if it exists, else build model
+                if (modelPath.isFile()) {
+                    DuskfallServer.logger.info("Copying JSON folder for {}!", item.getId().toLowerCase());
+                    try {
+                        Files.copy(modelPath.toPath(),
+                                new File(outputFolder, "assets/duskfall/models/item/" + item.getId().toLowerCase() + ".json").toPath(),
+                                StandardCopyOption.REPLACE_EXISTING);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                } else {
+                    // Create the model json
+                    StringBuilder modelJson = new StringBuilder("{\n" +
+                            "  \"parent\": \"item/generated\",\n" +
+                            "  \"textures\": {\n" +
+                            "    \"layer0\": \"duskfall:item/" + item.getId().toLowerCase() + "\"\n" +
+                            "  }\n" +
+                            "}");
+
+                    // Write the model json to a file
+                    try {
+                        File modelFile = new File(outputFolder, "assets/duskfall/models/item/" + item.getId().toLowerCase() + ".json");
+                        modelFile.createNewFile();
+                        FileWriter writer = new FileWriter(modelFile);
+                        writer.write(modelJson.toString());
+                        writer.close();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             }
 
@@ -145,9 +168,9 @@ public class ResourcePackGen {
 
         // Delete leftover folder
 //        try {
-//            FileUtils.deleteDirectory(new File("DuskfallResourcePack"));
+//            FileUtils.deleteDirectory(outputFolder);
 //        } catch (IOException e) {
-//            DuskfallServer.logger.warn("Could not delete leftover DuskfallResourcePack folder during resource pack generation!");
+//            throw new RuntimeException(e);
 //        }
     }
 

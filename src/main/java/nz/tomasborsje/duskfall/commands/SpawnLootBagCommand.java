@@ -3,6 +3,9 @@ package nz.tomasborsje.duskfall.commands;
 import net.kyori.adventure.text.Component;
 import net.minestom.server.command.builder.Command;
 import net.minestom.server.command.builder.arguments.ArgumentType;
+import net.minestom.server.entity.Entity;
+import net.minestom.server.entity.EntityType;
+import net.minestom.server.entity.metadata.display.ItemDisplayMeta;
 import nz.tomasborsje.duskfall.DuskfallServer;
 import nz.tomasborsje.duskfall.entities.LootBagEntity;
 import nz.tomasborsje.duskfall.entities.MmoPlayer;
@@ -33,6 +36,13 @@ public class SpawnLootBagCommand extends Command {
                         ItemRegistry.GetRandomItem().buildItemStack(), ItemRegistry.GetRandomItem().buildItemStack(), ItemRegistry.GetRandomItem().buildItemStack());
 
                 blockDisplay.setInstance(DuskfallServer.overworldInstance, player.getPosition());
+
+                // TODO: Remove this obv
+                Entity itemDisplay = new Entity(EntityType.ITEM_DISPLAY);
+                itemDisplay.setNoGravity(true);
+                ItemDisplayMeta meta = (ItemDisplayMeta) itemDisplay.getEntityMeta();
+                meta.setItemStack(ItemRegistry.Get("silverleaf").buildItemStack());
+                itemDisplay.setInstance(player.getInstance(), player.getPosition());
             }
         }, lootTableIdArg);
     }
