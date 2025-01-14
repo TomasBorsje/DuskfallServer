@@ -118,7 +118,7 @@ public class MmoCreature extends EntityCreature implements MmoEntity {
             player.sendMessage("Congrats on killing me (" + getClass().getSimpleName() + "), dude!");
             player.levelUp();
 
-            LootBagEntity lootBag = new LootBagEntity(player, position, Component.text(getMmoName()), ItemRegistry.GetRandomItem().buildItemStack(), ItemRegistry.GetRandomItem().buildItemStack(), ItemRegistry.GetRandomItem().buildItemStack());
+            LootBagEntity lootBag = new LootBagEntity(Component.text(getMmoName()), ItemRegistry.GetRandomItem().buildItemStack(), ItemRegistry.GetRandomItem().buildItemStack(), ItemRegistry.GetRandomItem().buildItemStack());
             lootBag.setInstance(instance, position);
         }
         kill();

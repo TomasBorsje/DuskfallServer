@@ -66,8 +66,6 @@ public class ItemDefinition implements Cloneable {
             return ItemStack.AIR;
         }
 
-        DuskfallServer.logger.info("Creating stack for def {}", this);
-
         // Get tooltip components
         List<TooltipLine> tooltipItems = new ArrayList<>();
         addTooltipLines(tooltipItems);

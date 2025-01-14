@@ -1,25 +1,18 @@
 package nz.tomasborsje.duskfall.entities;
 
 import net.kyori.adventure.text.Component;
-import net.minestom.server.coordinate.Pos;
-import net.minestom.server.coordinate.Vec;
-import net.minestom.server.entity.Entity;
-import net.minestom.server.entity.EntityType;
-import net.minestom.server.entity.metadata.display.BlockDisplayMeta;
-import net.minestom.server.entity.metadata.other.InteractionMeta;
 import net.minestom.server.event.EventFilter;
 import net.minestom.server.event.EventListener;
 import net.minestom.server.event.EventNode;
 import net.minestom.server.event.inventory.InventoryClickEvent;
 import net.minestom.server.event.inventory.InventoryCloseEvent;
 import net.minestom.server.event.trait.InventoryEvent;
-import net.minestom.server.instance.block.Block;
 import net.minestom.server.inventory.Inventory;
 import net.minestom.server.inventory.InventoryType;
 import net.minestom.server.item.ItemStack;
 import nz.tomasborsje.duskfall.DuskfallServer;
-import nz.tomasborsje.duskfall.core.InteractableEntity;
 import nz.tomasborsje.duskfall.core.ItemGainReason;
+import nz.tomasborsje.duskfall.registry.ItemRegistry;
 import nz.tomasborsje.duskfall.sounds.Sounds;
 
 import java.util.Random;
@@ -28,42 +21,13 @@ import java.util.Random;
  * Loot bag entities can be interacted with by players to open a loot screen, allowing players to loot
  * items. Commonly dropped by mobs.
  */
-public class LootBagEntity extends Entity implements InteractableEntity {
-    private final static float SCALE = 0.75f;
-    private final static Vec SCALE_VEC = new Vec(SCALE, SCALE, SCALE);
+public class LootBagEntity extends InteractableItemDisplayEntity {
     private final static Random rand = new Random();
-    private final Entity displayEntity;
     private final Inventory lootScreen;
     private final EventNode<InventoryEvent> lootScreenEventHandler;
 
-    public LootBagEntity(MmoPlayer player, Pos spawnPos, Component title, ItemStack... itemStacks) {
-        super(EntityType.INTERACTION);
-
-
-        InteractionMeta meta = ((InteractionMeta)entityMeta);
-        meta.setNotifyAboutChanges(false);
-        meta.setWidth(SCALE);
-        meta.setHeight(SCALE);
-        meta.setResponse(true);
-        meta.setNotifyAboutChanges(true);
-
-        viewers.clear();
-
-        // Spawn display block entity
-        displayEntity = new Entity(EntityType.BLOCK_DISPLAY);
-
-        // TODO: Re-enable gravity on both entities once the hitboxes line up - may need to set translation on display
-        setNoGravity(true);
-        displayEntity.setNoGravity(true);
-
-        BlockDisplayMeta displayMeta = (BlockDisplayMeta) displayEntity.getEntityMeta();
-        displayMeta.setBlockState(Block.RAW_GOLD_BLOCK);
-        displayMeta.setScale(SCALE_VEC);
-
-        displayEntity.setInstance(player.getInstance(), spawnPos).thenRun(() -> {
-            displayEntity.teleport(displayEntity.getPosition().add(-SCALE * 0.5f, 0, SCALE * 0.5f));
-            displayEntity.lookAt(displayEntity.getPosition().add(1, 0, 0));
-        });
+    public LootBagEntity(Component title, ItemStack... itemStacks) {
+        super(0.75f, 0.75f, 1f, ItemRegistry.Get("silverleaf").buildItemStack());
 
         // Init inventory and event handlers
         lootScreen = new Inventory(InventoryType.CHEST_2_ROW, title);
@@ -87,7 +51,7 @@ public class LootBagEntity extends Entity implements InteractableEntity {
 
         // Delete everything
         lootScreen.clear();
-        displayEntity.remove();
+        itemDisplayEntity.remove();
         this.remove();
 
         DuskfallServer.eventHandler.removeChild(lootScreenEventHandler);
