@@ -1,6 +1,7 @@
 package nz.tomasborsje.duskfall.entities;
 
 import net.kyori.adventure.text.Component;
+import net.minestom.server.coordinate.Pos;
 import net.minestom.server.event.EventFilter;
 import net.minestom.server.event.EventListener;
 import net.minestom.server.event.EventNode;
@@ -10,6 +11,8 @@ import net.minestom.server.event.trait.InventoryEvent;
 import net.minestom.server.inventory.Inventory;
 import net.minestom.server.inventory.InventoryType;
 import net.minestom.server.item.ItemStack;
+import net.minestom.server.network.packet.server.play.ParticlePacket;
+import net.minestom.server.particle.Particle;
 import nz.tomasborsje.duskfall.DuskfallServer;
 import nz.tomasborsje.duskfall.core.ItemGainReason;
 import nz.tomasborsje.duskfall.registry.ItemRegistry;
@@ -25,6 +28,7 @@ public class LootBagEntity extends InteractableItemDisplayEntity {
     private final static Random rand = new Random();
     private final Inventory lootScreen;
     private final EventNode<InventoryEvent> lootScreenEventHandler;
+    private int sparkleCounter;
 
     public LootBagEntity(Component title, ItemStack... itemStacks) {
         super(0.75f, 0.75f, 1f, ItemRegistry.Get("loot_bag_model").buildItemStack());
@@ -39,6 +43,17 @@ public class LootBagEntity extends InteractableItemDisplayEntity {
         // Populate item slots
         for(ItemStack stack : itemStacks) {
             lootScreen.setItemStack(rand.nextInt(lootScreen.getSize()), stack);
+        }
+    }
+
+    @Override
+    public void tick(long time) {
+        super.tick(time);
+        sparkleCounter++;
+        if(sparkleCounter>10) {
+            sparkleCounter = 0;
+            Pos offset = new Pos(rand.nextFloat() - 0.5f, rand.nextFloat()+0.5f, rand.nextFloat() - 0.5f);
+            sendPacketToViewers(new ParticlePacket(Particle.FIREWORK, this.getPosition(), offset, 0, 1));
         }
     }
 

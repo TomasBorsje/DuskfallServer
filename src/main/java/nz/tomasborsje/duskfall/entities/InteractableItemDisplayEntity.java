@@ -14,8 +14,8 @@ import nz.tomasborsje.duskfall.core.InteractableEntity;
  */
 public abstract class InteractableItemDisplayEntity extends Entity implements InteractableEntity {
     protected final Entity itemDisplayEntity;
-    private final float width;
-    private final float height;
+    protected final float width;
+    protected final float height;
 
     public InteractableItemDisplayEntity(float interactionWidth, float interactionHeight, float modelScale, ItemStack displayStack) {
         super(EntityType.INTERACTION);
@@ -43,12 +43,6 @@ public abstract class InteractableItemDisplayEntity extends Entity implements In
         displayMeta.setDisplayContext(ItemDisplayMeta.DisplayContext.FIXED);
         displayMeta.setScale(new Vec(modelScale, modelScale, modelScale));
         displayMeta.setNotifyAboutChanges(true);
-    }
-
-    @Override
-    public void tick(long time) {
-        super.tick(time);
-
     }
 
     @Override

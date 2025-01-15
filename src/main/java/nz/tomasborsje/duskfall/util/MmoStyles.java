@@ -58,4 +58,10 @@ public class MmoStyles {
             .decoration(TextDecoration.ITALIC, false)
             .decoration(TextDecoration.BOLD, false)
             .build();
+
+    public static final Style LETTER_TEXT_STYLE = Style.style()
+            .color(NamedTextColor.DARK_GRAY)
+            .decoration(TextDecoration.ITALIC, true)
+            .decoration(TextDecoration.BOLD, false)
+            .build();
 }

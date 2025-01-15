@@ -26,11 +26,10 @@
     "rarity": "rare"
   },
   {
-    "def": "letter",
+    "def": "item",
     "id": "forgotten_letter",
     "name": "Forgotten Letter",
-    "message": "The preparations are complete.\nI expect to see you under the next full moon.\nMiss this and you're dead.",
-    "author": "V",
+    "description": "The preparations are complete.\nI expect to see you under the next full moon.\nMiss this and you're dead.\n\n-V",
     "material": "paper",
     "rarity": "trash"
   },

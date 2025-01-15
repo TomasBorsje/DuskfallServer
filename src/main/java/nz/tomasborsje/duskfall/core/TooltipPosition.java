@@ -12,7 +12,6 @@ public enum TooltipPosition {
     EFFECT_SPACE(40),
     UNIQUE_EFFECTS(45),
     SIMPLE_EFFECTS(50),
-    LETTER_MESSAGE(55),
     DESCRIPTION_SPACE(60),
     DESCRIPTION(65);
 

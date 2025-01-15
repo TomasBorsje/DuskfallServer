@@ -31,7 +31,6 @@ public class ItemDefinition implements Cloneable {
         defToClassMap = new ImmutableBiMap.Builder<String, Class<? extends ItemDefinition>>()
                 .put("item", ItemDefinition.class)
                 .put("buff", StatModifyingItemDefinition.class)
-                .put("letter", LetterItemDefinition.class)
                 .build();
     }
 
@@ -86,7 +85,9 @@ public class ItemDefinition implements Cloneable {
     protected void addTooltipLines(List<TooltipLine> tooltipLines) {
         if(!description.isEmpty()) {
             tooltipLines.add(new TooltipLine(TooltipPosition.DESCRIPTION_SPACE, Component.text("", MmoStyles.DESCRIPTION)));
-            tooltipLines.add(new TooltipLine(TooltipPosition.DESCRIPTION, Component.text(description, MmoStyles.DESCRIPTION)));
+            for(String str : description.split("(\r\n|\n|\r)")) {
+                tooltipLines.add(new TooltipLine(TooltipPosition.DESCRIPTION, Component.text(str, MmoStyles.TRASH_STYLE)));
+            }
         }
     }
 
