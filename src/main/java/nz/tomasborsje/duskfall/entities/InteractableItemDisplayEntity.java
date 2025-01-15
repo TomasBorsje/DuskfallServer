@@ -39,7 +39,8 @@ public abstract class InteractableItemDisplayEntity extends Entity implements In
         ItemDisplayMeta displayMeta = (ItemDisplayMeta) itemDisplayEntity.getEntityMeta();
         displayMeta.setNotifyAboutChanges(false);
         displayMeta.setItemStack(displayStack);
-        displayMeta.setDisplayContext(ItemDisplayMeta.DisplayContext.GROUND);
+        displayMeta.setTranslation(new Pos(0, 9/16f, 0));
+        displayMeta.setDisplayContext(ItemDisplayMeta.DisplayContext.FIXED);
         displayMeta.setScale(new Vec(modelScale, modelScale, modelScale));
         displayMeta.setNotifyAboutChanges(true);
     }

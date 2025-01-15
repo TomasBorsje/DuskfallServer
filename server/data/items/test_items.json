@@ -18,6 +18,14 @@
     "rarity": "rare"
   },
   {
+    "def": "item",
+    "id": "shard_of_fury",
+    "name": "Shard of fury",
+    "description": "The gem of fury.",
+    "material": "leather",
+    "rarity": "rare"
+  },
+  {
     "def": "letter",
     "id": "forgotten_letter",
     "name": "Forgotten Letter",
@@ -28,10 +36,18 @@
   },
   {
     "def": "item",
-    "id": "silverleaf",
-    "name": "Silverleaf",
-    "description": "A cool plant model, right?",
-    "material": "gold_ingot",
-    "rarity": "uncommon"
+    "id": "silverleaf_model",
+    "name": "Silverleaf Bush",
+    "description": "",
+    "material": "birch_sapling",
+    "rarity": "common"
+  },
+  {
+    "def": "item",
+    "id": "loot_bag_model",
+    "name": "Loot Bag",
+    "description": "",
+    "material": "leather",
+    "rarity": "common"
   }
 ]

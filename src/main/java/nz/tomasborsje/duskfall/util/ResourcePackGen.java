@@ -9,6 +9,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -108,9 +109,11 @@ public class ResourcePackGen {
                     "  },\n" +
                     "  \"overrides\": [\n");
             int i = 0;
-            for (ItemDefinition item : items) {
-                // Model overrides
-                modelJson.append("    {\"predicate\": {\"custom_model_data\": ").append((int) ((float) (item.getId().toLowerCase().hashCode() % 1_000_000))).append("}, \"model\": \"duskfall:item/").append(item.getId().toLowerCase()).append("\"}");
+
+            // Create model predicate overrides
+            // NOTE: We need to sort item definitions in ascending order due to how Minecraft handles model predicates
+            for (ItemDefinition item : items.stream().sorted(Comparator.comparingInt(item -> item.getId().toLowerCase().hashCode() % 1_000_000)).toList()) {
+                modelJson.append("    {\"predicate\": {\"custom_model_data\": ").append(item.getId().toLowerCase().hashCode() % 1_000_000).append("}, \"model\": \"duskfall:item/").append(item.getId().toLowerCase()).append("\"}");
                 if (i < items.size() - 1) {
                     modelJson.append(",");
                 }

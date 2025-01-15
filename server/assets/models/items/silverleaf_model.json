@@ -2,8 +2,8 @@
 	"credit": "Made with Blockbench",
 	"texture_size": [64, 64],
 	"textures": {
-		"0": "duskfall:item/silverleaf",
-		"particle": "duskfall:item/silverleaf"
+		"0": "duskfall:item/silverleaf_model",
+		"particle": "duskfall:item/silverleaf_model"
 	},
 	"elements": [
 		{

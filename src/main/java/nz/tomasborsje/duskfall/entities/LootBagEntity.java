@@ -27,7 +27,7 @@ public class LootBagEntity extends InteractableItemDisplayEntity {
     private final EventNode<InventoryEvent> lootScreenEventHandler;
 
     public LootBagEntity(Component title, ItemStack... itemStacks) {
-        super(0.75f, 0.75f, 1f, ItemRegistry.Get("silverleaf").buildItemStack());
+        super(0.75f, 0.75f, 1f, ItemRegistry.Get("loot_bag_model").buildItemStack());
 
         // Init inventory and event handlers
         lootScreen = new Inventory(InventoryType.CHEST_2_ROW, title);

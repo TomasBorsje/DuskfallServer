@@ -12,6 +12,8 @@ import net.minestom.server.instance.InstanceManager;
 import net.minestom.server.instance.LightingChunk;
 import net.minestom.server.instance.anvil.AnvilLoader;
 import net.minestom.server.instance.block.Block;
+import nz.tomasborsje.duskfall.commands.DebugItemCommand;
+import nz.tomasborsje.duskfall.commands.GiveItemCommand;
 import nz.tomasborsje.duskfall.commands.SpawnEntityCommand;
 import nz.tomasborsje.duskfall.commands.SpawnLootBagCommand;
 import nz.tomasborsje.duskfall.entities.MmoPlayer;
@@ -111,6 +113,8 @@ public class DuskfallServer {
     private static void registerCommands(CommandManager commandManager) {
         commandManager.register(new SpawnEntityCommand());
         commandManager.register(new SpawnLootBagCommand());
+        commandManager.register(new GiveItemCommand());
+        commandManager.register(new DebugItemCommand());
     }
 
     /**

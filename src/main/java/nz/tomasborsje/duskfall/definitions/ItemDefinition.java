@@ -72,7 +72,6 @@ public class ItemDefinition implements Cloneable {
         List<Component> tooltipLines = tooltipItems.stream().sorted().map(TooltipLine::getComponent).toList();
 
         return ItemStack.builder(stackMaterial)
-                .glowing()
                 .customName(Component.text(name, rarity.nameStyle))
                 .lore(tooltipLines)
                 .set(ItemStackTags.MMO_CORE_DATA, CompoundBinaryTag.builder().putString("id", id).build())
