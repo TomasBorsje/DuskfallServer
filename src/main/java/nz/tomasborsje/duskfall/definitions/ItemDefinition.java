@@ -86,7 +86,7 @@ public class ItemDefinition implements Cloneable {
         if(!description.isEmpty()) {
             tooltipLines.add(new TooltipLine(TooltipPosition.DESCRIPTION_SPACE, Component.text("", MmoStyles.DESCRIPTION)));
             for(String str : description.split("(\r\n|\n|\r)")) {
-                tooltipLines.add(new TooltipLine(TooltipPosition.DESCRIPTION, Component.text(str, MmoStyles.TRASH_STYLE)));
+                tooltipLines.add(new TooltipLine(TooltipPosition.DESCRIPTION, Component.text(str, MmoStyles.DESCRIPTION)));
             }
         }
     }
