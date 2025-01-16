@@ -31,8 +31,10 @@ import java.util.List;
 import java.util.Map;
 
 public class MmoPlayer extends Player implements PlayerProvider, MmoEntity {
-    private final List<Buff> buffs = new ArrayList<>();
+    private final PlayerUi ui;
     private final StatContainer stats;
+    private final List<Buff> buffs = new ArrayList<>();
+
     private boolean shouldRecalculateStats = true;
 
     public MmoPlayer(@NotNull PlayerConnection playerConnection, @NotNull GameProfile gameProfile) {
@@ -56,6 +58,7 @@ public class MmoPlayer extends Player implements PlayerProvider, MmoEntity {
         }
 
         stats = new StatContainer(this, data.level);
+        ui = new PlayerUi(this); // Ui relies on stats
         DuskfallServer.logger.info("Player object created with loaded level {}", stats.getLevel());
     }
 
@@ -85,7 +88,7 @@ public class MmoPlayer extends Player implements PlayerProvider, MmoEntity {
         // Health regen (1/tick)
         stats.gainHealth(1);
 
-        renderPlayerUi();
+        ui.render();
     }
 
     @Override
@@ -159,11 +162,11 @@ public class MmoPlayer extends Player implements PlayerProvider, MmoEntity {
             }
 
             // Append lore lines
-            Component hoverText = itemName.appendNewline();
+            Component hoverText = itemName;
             List<Component> lore = itemStack.get(ItemComponent.LORE);
             if (lore != null) {
-                for (Component loreLine : lore) {
-                    hoverText = hoverText.append(loreLine);
+                for (Component component : lore) {
+                    hoverText = hoverText.appendNewline().append(component);
                 }
             }
 
@@ -177,18 +180,6 @@ public class MmoPlayer extends Player implements PlayerProvider, MmoEntity {
             // Play sound
             playSound(Sounds.LOOT_BAG_RUSTLE);
         }
-    }
-
-    /**
-     * Renders and updates the player's MMO HUD (health bar, stats above hot-bar, scoreboard, etc.).
-     */
-    private void renderPlayerUi() {
-        // Set health bar to display player health
-        setHealth(stats.getCurrentHealth() / (float) stats.getMaxHealth() * 19 + 1); // TODO: Interrupt play out packet?
-
-        // Show health to player
-        Component healthBar = Component.text(TextIcons.HEART+" ", NamedTextColor.RED).append(Component.text(stats.getCurrentHealth() + " / " + stats.getMaxHealth() + " Melee: " + stats.getMeleeDamage(), NamedTextColor.WHITE));
-        sendActionBar(healthBar);
     }
 
     @Override

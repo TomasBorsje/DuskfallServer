@@ -12,6 +12,7 @@ import net.minestom.server.instance.InstanceManager;
 import net.minestom.server.instance.LightingChunk;
 import net.minestom.server.instance.anvil.AnvilLoader;
 import net.minestom.server.instance.block.Block;
+import net.minestom.server.network.packet.PacketRegistry;
 import nz.tomasborsje.duskfall.commands.DebugItemCommand;
 import nz.tomasborsje.duskfall.commands.GiveItemCommand;
 import nz.tomasborsje.duskfall.commands.SpawnEntityCommand;
