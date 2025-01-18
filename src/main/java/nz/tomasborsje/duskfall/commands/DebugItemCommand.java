@@ -1,11 +1,7 @@
 package nz.tomasborsje.duskfall.commands;
 
 import net.minestom.server.command.builder.Command;
-import net.minestom.server.command.builder.arguments.ArgumentType;
-import nz.tomasborsje.duskfall.core.ItemGainReason;
-import nz.tomasborsje.duskfall.definitions.ItemDefinition;
 import nz.tomasborsje.duskfall.entities.MmoPlayer;
-import nz.tomasborsje.duskfall.registry.ItemRegistry;
 
 public class DebugItemCommand extends Command {
 

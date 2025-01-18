@@ -12,7 +12,6 @@ import net.minestom.server.instance.InstanceManager;
 import net.minestom.server.instance.LightingChunk;
 import net.minestom.server.instance.anvil.AnvilLoader;
 import net.minestom.server.instance.block.Block;
-import net.minestom.server.network.packet.PacketRegistry;
 import nz.tomasborsje.duskfall.commands.DebugItemCommand;
 import nz.tomasborsje.duskfall.commands.GiveItemCommand;
 import nz.tomasborsje.duskfall.commands.SpawnEntityCommand;
@@ -20,7 +19,7 @@ import nz.tomasborsje.duskfall.commands.SpawnLootBagCommand;
 import nz.tomasborsje.duskfall.entities.MmoPlayer;
 import nz.tomasborsje.duskfall.database.DatabaseConnection;
 import nz.tomasborsje.duskfall.events.*;
-import nz.tomasborsje.duskfall.registry.ItemRegistry;
+import nz.tomasborsje.duskfall.registry.Registries;
 import nz.tomasborsje.duskfall.util.ResourcePackGen;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -47,9 +46,11 @@ public class DuskfallServer {
         // Set MongoDB logger to error so it doesn't spam
         ((LoggerContext) LoggerFactory.getILoggerFactory()).getLogger("org.mongodb.driver").setLevel(Level.ERROR);
 
-        // Parse item definitions
-        ItemRegistry.LoadItemDefinitions(new File("data", "items"));
+        // Init registries
+        Registries.ITEMS.loadItemDefinitions(new File("data", "items"));
+        Registries.ENTITIES.loadEntityDefinitions(new File("data", "entities"));
 
+        // Generate resource pack TODO: Move this somewhere else.
         ResourcePackGen.GenerateResourcePack();
 
         // Connect to DB

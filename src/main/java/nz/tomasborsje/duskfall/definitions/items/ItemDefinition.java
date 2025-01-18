@@ -1,4 +1,4 @@
-package nz.tomasborsje.duskfall.definitions;
+package nz.tomasborsje.duskfall.definitions.items;
 
 import com.google.common.collect.ImmutableBiMap;
 import com.google.gson.Gson;
@@ -25,7 +25,6 @@ import java.util.List;
  * Represents the immutable definition of an item.
  */
 public class ItemDefinition implements Cloneable {
-    private static final Gson gson = new Gson();
     private static final ImmutableBiMap<String, Class<? extends ItemDefinition>> defToClassMap;
     static {
         defToClassMap = new ImmutableBiMap.Builder<String, Class<? extends ItemDefinition>>()
@@ -38,10 +37,10 @@ public class ItemDefinition implements Cloneable {
      * The ID of the item.
      */
     @SerializedName("id")
-    private String id = null;
+    private String id;
 
     @SerializedName("name")
-    private String name = null;
+    private String name;
 
     @SerializedName("description")
     private String description = "";
@@ -99,7 +98,7 @@ public class ItemDefinition implements Cloneable {
         return material;
     }
 
-    public static @Nullable ItemDefinition deserialize(JsonObject jsonObject) {
+    public static @Nullable ItemDefinition deserialize(Gson gson, JsonObject jsonObject) {
         String def = jsonObject.get("def").getAsString();  // Use the 'def' field to get target class
         Class<? extends ItemDefinition> itemDefClass = defToClassMap.get(def);
 
@@ -108,17 +107,6 @@ public class ItemDefinition implements Cloneable {
             return null;
         };
         return gson.fromJson(jsonObject, itemDefClass);
-    }
-
-    public String serialize() {
-        JsonObject json = gson.toJsonTree(this).getAsJsonObject();
-        String def = defToClassMap.inverse().get(this.getClass());
-        if(def == null) {
-            throw new IllegalArgumentException("Tried to serialize unspecified ItemDefinition class "+this.getClass().getSimpleName());
-        }
-
-        json.addProperty("def", def);
-        return json.toString();
     }
 
     @Override

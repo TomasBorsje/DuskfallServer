@@ -6,7 +6,7 @@ import net.minestom.server.command.builder.arguments.ArgumentType;
 import nz.tomasborsje.duskfall.DuskfallServer;
 import nz.tomasborsje.duskfall.entities.LootBagEntity;
 import nz.tomasborsje.duskfall.entities.MmoPlayer;
-import nz.tomasborsje.duskfall.registry.ItemRegistry;
+import nz.tomasborsje.duskfall.registry.Registries;
 
 public class SpawnLootBagCommand extends Command {
 
@@ -30,7 +30,7 @@ public class SpawnLootBagCommand extends Command {
 
             if(sender instanceof MmoPlayer player) {
                 LootBagEntity blockDisplay = new LootBagEntity(Component.text("Loot Bag - "+lootTableId),
-                        ItemRegistry.GetRandomItem().buildItemStack(), ItemRegistry.GetRandomItem().buildItemStack(), ItemRegistry.GetRandomItem().buildItemStack());
+                        Registries.ITEMS.getRandomItem().buildItemStack(), Registries.ITEMS.getRandomItem().buildItemStack(), Registries.ITEMS.getRandomItem().buildItemStack());
                 blockDisplay.setInstance(DuskfallServer.overworldInstance, player.getPosition());
             }
         }, lootTableIdArg);

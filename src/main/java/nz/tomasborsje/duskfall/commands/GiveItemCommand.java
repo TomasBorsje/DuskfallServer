@@ -2,17 +2,10 @@ package nz.tomasborsje.duskfall.commands;
 
 import net.minestom.server.command.builder.Command;
 import net.minestom.server.command.builder.arguments.ArgumentType;
-import net.minestom.server.coordinate.Pos;
-import net.minestom.server.entity.EntityType;
-import nz.tomasborsje.duskfall.DuskfallServer;
-import nz.tomasborsje.duskfall.buffs.Buff;
-import nz.tomasborsje.duskfall.buffs.BurningStrengthBuff;
 import nz.tomasborsje.duskfall.core.ItemGainReason;
-import nz.tomasborsje.duskfall.definitions.ItemDefinition;
-import nz.tomasborsje.duskfall.entities.MmoCreature;
-import nz.tomasborsje.duskfall.entities.MmoEntity;
+import nz.tomasborsje.duskfall.definitions.items.ItemDefinition;
 import nz.tomasborsje.duskfall.entities.MmoPlayer;
-import nz.tomasborsje.duskfall.registry.ItemRegistry;
+import nz.tomasborsje.duskfall.registry.Registries;
 
 public class GiveItemCommand extends Command {
 
@@ -33,7 +26,7 @@ public class GiveItemCommand extends Command {
 
         addSyntax((sender, context) -> {
             final String itemId = context.get(itemIdArg);
-            ItemDefinition itemDefinition = ItemRegistry.Get(itemId);
+            ItemDefinition itemDefinition = Registries.ITEMS.get(itemId);
             if(itemDefinition == null) {
                 sender.sendMessage("The given item ID "+itemId+" does not exist!");
                 return;

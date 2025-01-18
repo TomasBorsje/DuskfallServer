@@ -1,0 +1,26 @@
+[
+  {
+    "def": "basic",
+    "entity_type": "zombie",
+    "ai_type": "passive",
+    "id": "zomb",
+    "name": "Zomb",
+    "level": 30
+  },
+  {
+    "def": "basic",
+    "entity_type": "skeleton",
+    "ai_type": "neutral",
+    "id": "skele",
+    "name": "Skele",
+    "level": 30
+  },
+  {
+    "def": "basic",
+    "entity_type": "cow",
+    "ai_type": "aggressive",
+    "id": "cow_thing",
+    "name": "Cow Thing",
+    "level": 30
+  }
+]

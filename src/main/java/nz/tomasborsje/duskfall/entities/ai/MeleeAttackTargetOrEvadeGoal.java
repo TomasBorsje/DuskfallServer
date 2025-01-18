@@ -17,7 +17,7 @@ import org.jetbrains.annotations.NotNull;
 import java.time.Duration;
 import java.time.temporal.TemporalUnit;
 
-public class MeleeAttackOrEvadeGoal extends GoalSelector {
+public class MeleeAttackTargetOrEvadeGoal extends GoalSelector {
 
     private final Cooldown cooldown = new Cooldown(Duration.of(5, TimeUnit.SERVER_TICK));
 
@@ -39,7 +39,7 @@ public class MeleeAttackOrEvadeGoal extends GoalSelector {
      * @param delay          the delay between each attacks
      * @param timeUnit       the unit of the delay
      */
-    public MeleeAttackOrEvadeGoal(@NotNull MmoCreature entityCreature, Pos spawnPos, double attackRange, double leashRange, int delay, @NotNull TemporalUnit timeUnit) {
+    public MeleeAttackTargetOrEvadeGoal(@NotNull MmoCreature entityCreature, Pos spawnPos, double attackRange, double leashRange, int delay, @NotNull TemporalUnit timeUnit) {
         this(entityCreature, spawnPos, attackRange, leashRange, Duration.of(delay, timeUnit));
     }
 
@@ -48,7 +48,7 @@ public class MeleeAttackOrEvadeGoal extends GoalSelector {
      * @param attackRange          the allowed range the entity can attack others.
      * @param delay          the delay between each attacks
      */
-    public MeleeAttackOrEvadeGoal(@NotNull MmoCreature entityCreature, Pos spawnPos, double attackRange, double leashRange, Duration delay) {
+    public MeleeAttackTargetOrEvadeGoal(@NotNull MmoCreature entityCreature, Pos spawnPos, double attackRange, double leashRange, Duration delay) {
         super(entityCreature);
         this.spawnPos = spawnPos;
         this.range = attackRange;

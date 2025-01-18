@@ -1,4 +1,4 @@
-package nz.tomasborsje.duskfall.definitions;
+package nz.tomasborsje.duskfall.definitions.items;
 
 import com.google.gson.annotations.SerializedName;
 import net.kyori.adventure.nbt.CompoundBinaryTag;

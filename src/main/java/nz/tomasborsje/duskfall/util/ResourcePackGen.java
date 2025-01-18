@@ -1,8 +1,8 @@
 package nz.tomasborsje.duskfall.util;
 
 import nz.tomasborsje.duskfall.DuskfallServer;
-import nz.tomasborsje.duskfall.definitions.ItemDefinition;
-import nz.tomasborsje.duskfall.registry.ItemRegistry;
+import nz.tomasborsje.duskfall.definitions.items.ItemDefinition;
+import nz.tomasborsje.duskfall.registry.Registries;
 import org.apache.commons.io.FileUtils;
 
 import java.io.*;
@@ -39,7 +39,7 @@ public class ResourcePackGen {
         HashMap<String, Set<ItemDefinition>> itemsByMaterial = new HashMap<String, Set<ItemDefinition>>();
 
         // Get all items and sort them into a dictionary of sets based on their material
-        for (ItemDefinition item : ItemRegistry.GetAllItems()) {
+        for (ItemDefinition item : Registries.ITEMS.getAllItems()) {
             // First, check if a texture override exists in textures/id.png
             File textureFile = Paths.get("assets", "textures", "items", item.getId().toLowerCase() + ".png").toFile();
             if (!textureFile.exists()) {

@@ -15,7 +15,7 @@ import net.minestom.server.network.packet.server.play.ParticlePacket;
 import net.minestom.server.particle.Particle;
 import nz.tomasborsje.duskfall.DuskfallServer;
 import nz.tomasborsje.duskfall.core.ItemGainReason;
-import nz.tomasborsje.duskfall.registry.ItemRegistry;
+import nz.tomasborsje.duskfall.registry.Registries;
 import nz.tomasborsje.duskfall.sounds.Sounds;
 
 import java.util.Random;
@@ -31,7 +31,7 @@ public class LootBagEntity extends InteractableItemDisplayEntity {
     private int sparkleCounter;
 
     public LootBagEntity(Component title, ItemStack... itemStacks) {
-        super(0.75f, 0.75f, 1f, ItemRegistry.Get("loot_bag_model").buildItemStack());
+        super(0.75f, 0.75f, 1f, Registries.ITEMS.get("loot_bag_model").buildItemStack());
 
         // Init inventory and event handlers
         lootScreen = new Inventory(InventoryType.CHEST_2_ROW, title);
@@ -110,10 +110,10 @@ public class LootBagEntity extends InteractableItemDisplayEntity {
             }
         }
         if(empty) {
-            // TODO: Not working?
+            // TODO: Not working? Currently just closes it server-side?
             DuskfallServer.logger.info("Force closing loot screen...");
-            player.closeInventory(true);
-            player.closeInventory();
+//            player.closeInventory(true);
+//            player.closeInventory();
         }
     }
 
