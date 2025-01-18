@@ -33,6 +33,9 @@ public class EntityDefinition implements Cloneable, HasId {
     @SerializedName("ai_type")
     AiType aiType = AiType.PASSIVE;
 
+    @SerializedName("roam_radius")
+    int roamRadius = 10;
+
     public static EntityDefinition deserialize(Gson gson, JsonObject jsonObject)
     {
         JsonElement def = jsonObject.get("def");  // Use the 'def' field to get target class
@@ -77,5 +80,9 @@ public class EntityDefinition implements Cloneable, HasId {
 
     public AiType getAiType() {
         return aiType;
+    }
+
+    public int getRoamRadius() {
+        return roamRadius;
     }
 }

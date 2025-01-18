@@ -137,8 +137,8 @@ public class MeleeAttackTargetOrEvadeGoal extends GoalSelector {
 
     @Override
     public void end() {
-        // Exit combat
-        ((MmoCreature)entityCreature).exitCombat();
+        // TODO: Do we force exit combat here?
+        ((MmoCreature)entityCreature).forceExitCombat();
         // Stop following the target
         entityCreature.getNavigator().setPathTo(null);
         entityCreature.getAttribute(Attribute.MOVEMENT_SPEED).removeModifier(evadeSpeed);

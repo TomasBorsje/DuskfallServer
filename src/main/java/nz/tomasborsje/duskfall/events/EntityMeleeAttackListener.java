@@ -23,16 +23,17 @@ public class EntityMeleeAttackListener implements EventListener<EntityAttackEven
                 && event.getEntity() instanceof MmoEntity attacker
                 && !attacker.getStats().isDead()) {
 
-            victim.hurt(new DamageInstance(
+            DamageInstance hurt = new DamageInstance(
                     MmoDamageCause.ENTITY_ATTACK,
                     MmoDamageType.PHYSICAL,
                     attacker,
-                    attacker.getStats().getMeleeDamage()));
+                    attacker.getStats().getMeleeDamage());
+            victim.hurt(hurt);
 
             DuskfallServer.logger.info("{} with level {} was struck for {}! They are {} hp",
-                    event.getTarget().getClass().getSimpleName(),
+                    victim.getMmoName(),
                     victim.getStats().getLevel(),
-                    attacker.getStats().getMeleeDamage(),
+                    hurt.amount,
                     victim.getStats().getCurrentHealth());
         }
         return Result.SUCCESS;

@@ -28,14 +28,16 @@ import java.util.Collections;
 import java.util.List;
 
 public class MmoCreature extends EntityCreature implements MmoEntity {
+    private final static int AGGRO_RADIUS = 10;
+
     private final List<Buff> buffs = Collections.synchronizedList(new ArrayList<>());
     private final EntityDefinition def;
     private final Pos spawnPos;
     private final StatContainer stats;
-    private String name;
 
-    private boolean inCombat = false;
+    private String name;
     private boolean shouldRecalculateStats;
+    private int combatTicks = 0;
 
     /**
      * Creates a new MmoCreature defined by the values in the given EntityDefinition.
@@ -51,24 +53,26 @@ public class MmoCreature extends EntityCreature implements MmoEntity {
         this.stats = new StatContainer(this, def.getLevel());
         this.name = def.getName(); // Snapshot name so we can change it later if desired
 
-        // Add AI (Chase down target if we have one, else roam spawn)
+        // Add AI
         addAIGroup(
                 // Behaviour
                 switch (def.getAiType()) {
                     // Neutral and aggressive creatures attack their target or roam
                     case AGGRESSIVE, NEUTRAL -> List.of(
                             new MeleeAttackTargetOrEvadeGoal(this, spawnPos, 1.6, 20, 20, TimeUnit.SERVER_TICK),
-                            new RoamAroundSpawnGoal(this, spawnPos, 5)
+                            new RoamAroundSpawnGoal(this, spawnPos, def.getRoamRadius())
                     );
                     // Passive creatures roam
-                    default -> List.of( new RoamAroundSpawnGoal(this, spawnPos, 5));
+                    default -> List.of(new RoamAroundSpawnGoal(this, spawnPos, def.getRoamRadius()));
                 },
                 // Targeting
                 switch (def.getAiType()) {
                     // Aggressive creatures target their internal target or the nearest player
                     case AGGRESSIVE -> List.of(
                             new EntityCurrentTarget(this), // First target the last entity which attacked you
-                            new ClosestEntityTarget(this, 32, entity -> entity instanceof MmoPlayer) // Else target the nearest player
+                            new ClosestEntityTarget(this, AGGRO_RADIUS, entity -> entity instanceof MmoEntity) // Else target the nearest player
+
+//                    new NearbyPlayerTarget(this, AGGRO_RADIUS) // Else target the nearest player
                     );
                     // Neutral creatures only target their internal target, if any
                     case NEUTRAL -> List.of(
@@ -78,7 +82,6 @@ public class MmoCreature extends EntityCreature implements MmoEntity {
                     default -> List.of();
                 }
         );
-
 
         getAttribute(Attribute.MOVEMENT_SPEED).setBaseValue(0.1);
 
@@ -92,6 +95,11 @@ public class MmoCreature extends EntityCreature implements MmoEntity {
     @Override
     public void tick(long time) {
         super.tick(time);
+
+        // If in combat, reduce timer
+        if(isInCombat()) {
+            combatTicks--;
+        }
 
         // Tick all buffs then remove any marked for removal
         buffs.forEach(Buff::tick);
@@ -113,11 +121,8 @@ public class MmoCreature extends EntityCreature implements MmoEntity {
     }
 
     @Override
-    public void hurt(@NotNull DamageInstance damageInstance) {
-        if (!inCombat) {
-            enterCombat();
-        }
-        inCombat = true;
+    public int hurt(@NotNull DamageInstance damageInstance) {
+        setInCombat();
         int damageTaken = stats.takeDamage(damageInstance.type, damageInstance.amount);
         if (damageTaken >= 0) {
             this.damage(DamageType.GENERIC, 0.01f);
@@ -132,6 +137,8 @@ public class MmoCreature extends EntityCreature implements MmoEntity {
             }
         }
         updateEntityMeta();
+
+        return damageTaken;
     }
 
     @Override
@@ -152,7 +159,6 @@ public class MmoCreature extends EntityCreature implements MmoEntity {
             lootBag.setInstance(instance, position);
         }
         kill();
-        inCombat = false;
     }
 
     @Override
@@ -161,11 +167,35 @@ public class MmoCreature extends EntityCreature implements MmoEntity {
         this.teleport(spawnPos);
     }
 
-    public void enterCombat() {
+    public void setInCombat() {
+        if(combatTicks <= 0) {
+            combatTicks = 200; // Enter combat for 10 seconds
+            onEnterCombat();
+        }
+    }
+
+    public void forceExitCombat() {
+        if(combatTicks > 0) {
+            combatTicks = 0;
+            onExitCombat();
+        }
+    }
+
+    public boolean isInCombat() {
+        return combatTicks > 0;
+    }
+
+    /**
+     * Called when this entity enters combat.
+     */
+    protected void onEnterCombat() {
         setCustomNameVisible(true);
     }
 
-    public void exitCombat() {
+    /**
+     * Called when this entity leaves combat.
+     */
+    protected void onExitCombat() {
         setCustomNameVisible(false);
     }
 
@@ -216,7 +246,7 @@ public class MmoCreature extends EntityCreature implements MmoEntity {
     protected Component buildDisplayName() {
         // TODO: Proper entity names
         Component levelDisplay = Component.text("[", NamedTextColor.WHITE).append(Component.text(stats.getLevel(), NamedTextColor.BLUE).append(Component.text("] ", NamedTextColor.WHITE)));
-        Component nameDisplay = Component.text(name, NamedTextColor.RED).append(Component.text(" (" + stats.getCurrentHealth() + "/" + stats.getMaxHealth() + ")", NamedTextColor.WHITE));
+        Component nameDisplay = Component.text(name, def.getAiType().getNameColour()).append(Component.text(" (" + stats.getCurrentHealth() + "/" + stats.getMaxHealth() + ")", NamedTextColor.WHITE));
         return levelDisplay.append(nameDisplay);
     }
 

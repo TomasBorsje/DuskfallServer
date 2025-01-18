@@ -92,7 +92,7 @@ public class MmoPlayer extends Player implements PlayerProvider, MmoEntity {
     }
 
     @Override
-    public void hurt(@NotNull DamageInstance damageInstance) {
+    public int hurt(@NotNull DamageInstance damageInstance) {
         int damageTaken = stats.takeDamage(damageInstance.type, damageInstance.amount);
         // If we took actual damage - note damage taken is 0 if we're already dead
         if (damageTaken >= 0) {
@@ -103,6 +103,8 @@ public class MmoPlayer extends Player implements PlayerProvider, MmoEntity {
                 kill(damageInstance);
             }
         }
+
+        return damageTaken;
     }
 
     @Override

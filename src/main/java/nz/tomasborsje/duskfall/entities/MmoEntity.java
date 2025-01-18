@@ -35,7 +35,7 @@ public interface MmoEntity {
      * Hurt this entity using a given damage instance.
      * @param damageInstance The damage instance to hurt this entity with.
      */
-    void hurt(@NotNull DamageInstance damageInstance);
+    int hurt(@NotNull DamageInstance damageInstance);
 
     /**
      * Kill this entity.

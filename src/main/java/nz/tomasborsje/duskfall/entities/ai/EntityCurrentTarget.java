@@ -19,7 +19,11 @@ public class EntityCurrentTarget extends TargetSelector {
         if(entity == null) {
             return null;
         }
-        // Check range
-        return entityCreature.getDistanceSquared(entity) < RANGE * RANGE ? entity : null;
+        // If in range, set target and enter combat
+        if(entityCreature.getDistanceSquared(entity) < RANGE * RANGE) {
+            ((MmoCreature)entityCreature).setInCombat();
+            return entity;
+        }
+        return null;
     }
 }
