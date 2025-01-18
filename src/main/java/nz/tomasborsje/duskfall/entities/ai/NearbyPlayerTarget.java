@@ -1,10 +1,10 @@
 package nz.tomasborsje.duskfall.entities.ai;
 
 import net.minestom.server.entity.Entity;
-import net.minestom.server.entity.Player;
 import net.minestom.server.entity.ai.TargetSelector;
 import net.minestom.server.instance.Instance;
 import nz.tomasborsje.duskfall.entities.MmoCreature;
+import nz.tomasborsje.duskfall.entities.MmoPlayer;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Comparator;
@@ -33,12 +33,14 @@ public class NearbyPlayerTarget extends TargetSelector {
 
         var entity = instance.getNearbyEntities(entityCreature.getPosition(), range).stream()
                 // Don't target our self and make sure entity is valid and a player
-                .filter(ent -> !entityCreature.equals(ent) && ent instanceof Player && !ent.isRemoved())
+                .filter(ent -> !entityCreature.equals(ent) && !ent.isRemoved())
+                .filter(ent -> ent instanceof MmoPlayer)
                 .min(Comparator.comparingDouble(e -> e.getDistanceSquared(entityCreature)));
 
         // If we found a target, enter combat
         if(entity.isPresent()) {
             ((MmoCreature)entityCreature).setInCombat();
+            return entity.get();
         }
         return null;
     }

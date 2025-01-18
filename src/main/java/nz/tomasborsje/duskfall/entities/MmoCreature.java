@@ -6,7 +6,6 @@ import net.minestom.server.coordinate.Pos;
 import net.minestom.server.entity.Entity;
 import net.minestom.server.entity.EntityCreature;
 import net.minestom.server.entity.EntityType;
-import net.minestom.server.entity.ai.target.ClosestEntityTarget;
 import net.minestom.server.entity.attribute.Attribute;
 import net.minestom.server.entity.damage.DamageType;
 import net.minestom.server.entity.metadata.EntityMeta;
@@ -19,6 +18,7 @@ import nz.tomasborsje.duskfall.core.StatModifier;
 import nz.tomasborsje.duskfall.definitions.entities.EntityDefinition;
 import nz.tomasborsje.duskfall.entities.ai.EntityCurrentTarget;
 import nz.tomasborsje.duskfall.entities.ai.MeleeAttackTargetOrEvadeGoal;
+import nz.tomasborsje.duskfall.entities.ai.NearbyPlayerTarget;
 import nz.tomasborsje.duskfall.entities.ai.RoamAroundSpawnGoal;
 import nz.tomasborsje.duskfall.registry.Registries;
 import org.jetbrains.annotations.NotNull;
@@ -70,9 +70,7 @@ public class MmoCreature extends EntityCreature implements MmoEntity {
                     // Aggressive creatures target their internal target or the nearest player
                     case AGGRESSIVE -> List.of(
                             new EntityCurrentTarget(this), // First target the last entity which attacked you
-                            new ClosestEntityTarget(this, AGGRO_RADIUS, entity -> entity instanceof MmoEntity) // Else target the nearest player
-
-//                    new NearbyPlayerTarget(this, AGGRO_RADIUS) // Else target the nearest player
+                            new NearbyPlayerTarget(this, AGGRO_RADIUS)
                     );
                     // Neutral creatures only target their internal target, if any
                     case NEUTRAL -> List.of(
