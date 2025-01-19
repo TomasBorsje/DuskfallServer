@@ -114,6 +114,7 @@ public class MmoCreature extends EntityCreature implements MmoEntity {
         // If our current stats are outdated, recalculate
         if (shouldRecalculateStats) {
             stats.recalculateStats();
+            updateEntityMeta();
             shouldRecalculateStats = false;
         }
     }
@@ -157,6 +158,11 @@ public class MmoCreature extends EntityCreature implements MmoEntity {
             lootBag.setInstance(instance, position);
         }
         kill();
+    }
+
+    @Override
+    public void heal(int amount) {
+        stats.gainHealth(amount);
     }
 
     @Override

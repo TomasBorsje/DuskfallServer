@@ -43,6 +43,8 @@ public interface MmoEntity {
      */
     void kill(@NotNull DamageInstance killingBlow);
 
+    void heal(int amount);
+
     /**
      * Add a buff (or debuff) to this entity.
      * @param newBuff The buff to add to this entity.

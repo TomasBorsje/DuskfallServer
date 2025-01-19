@@ -137,8 +137,12 @@ public class MeleeAttackTargetOrEvadeGoal extends GoalSelector {
 
     @Override
     public void end() {
-        // TODO: Do we force exit combat here?
-        ((MmoCreature)entityCreature).forceExitCombat();
+        // Exit combat and heal to full
+        if(entityCreature instanceof MmoCreature mmoCreature) {
+            mmoCreature.forceExitCombat();
+            mmoCreature.getStats().healToFull();
+        }
+
         // Stop following the target
         entityCreature.getNavigator().setPathTo(null);
         entityCreature.getAttribute(Attribute.MOVEMENT_SPEED).removeModifier(evadeSpeed);

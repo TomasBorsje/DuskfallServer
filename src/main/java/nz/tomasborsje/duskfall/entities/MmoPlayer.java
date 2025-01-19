@@ -122,6 +122,11 @@ public class MmoPlayer extends Player implements PlayerProvider, MmoEntity {
     }
 
     @Override
+    public void heal(int amount) {
+        stats.gainHealth(amount);
+    }
+
+    @Override
     public void addBuff(@NotNull Buff newBuff) {
         // Replace buff if it exists, and should be replaced
         if (newBuff.shouldReplaceExisting()) {

@@ -7,17 +7,15 @@ import net.minestom.server.command.CommandManager;
 import net.minestom.server.event.GlobalEventHandler;
 import net.minestom.server.extras.MojangAuth;
 import net.minestom.server.instance.Chunk;
-import net.minestom.server.instance.InstanceContainer;
 import net.minestom.server.instance.InstanceManager;
 import net.minestom.server.instance.LightingChunk;
-import net.minestom.server.instance.anvil.AnvilLoader;
-import net.minestom.server.instance.block.Block;
 import nz.tomasborsje.duskfall.commands.DebugItemCommand;
 import nz.tomasborsje.duskfall.commands.GiveItemCommand;
 import nz.tomasborsje.duskfall.commands.SpawnEntityCommand;
 import nz.tomasborsje.duskfall.commands.SpawnLootBagCommand;
-import nz.tomasborsje.duskfall.entities.MmoPlayer;
+import nz.tomasborsje.duskfall.core.MmoInstance;
 import nz.tomasborsje.duskfall.database.DatabaseConnection;
+import nz.tomasborsje.duskfall.entities.MmoPlayer;
 import nz.tomasborsje.duskfall.events.*;
 import nz.tomasborsje.duskfall.registry.Registries;
 import nz.tomasborsje.duskfall.util.ResourcePackGen;
@@ -36,8 +34,8 @@ public class DuskfallServer {
     public static DatabaseConnection dbConnection;
     public static MinecraftServer server;
     public static InstanceManager instanceManager;
-    public static InstanceContainer overworldInstance;
     public static @NotNull GlobalEventHandler eventHandler;
+    public static MmoInstance overworldInstance;
 
 
     public static void main(String[] args) {
@@ -50,24 +48,18 @@ public class DuskfallServer {
         Registries.ITEMS.loadItemDefinitions(new File("data", "items"));
         Registries.ENTITIES.loadEntityDefinitions(new File("data", "entities"));
 
-        // Generate resource pack TODO: Move this somewhere else.
-        ResourcePackGen.GenerateResourcePack();
-
         // Connect to DB
         dbConnection = new DatabaseConnection(System.getenv("MMO_DATABASE_CONNECTION_STRING"));
+
         // Initialize the server
         server = MinecraftServer.init();
 
         instanceManager = MinecraftServer.getInstanceManager();
         eventHandler = MinecraftServer.getGlobalEventHandler();
-        overworldInstance = instanceManager.createInstanceContainer();
 
-        // TODO: Configure the Overworld instance
-        // Set the ChunkGenerator
-        overworldInstance.setGenerator(unit -> unit.modifier().fillHeight(0, 40, Block.GRASS_BLOCK));
-        // Set the world loader
-        overworldInstance.setChunkSupplier(LightingChunk::new);
-        overworldInstance.setChunkLoader(new AnvilLoader("worlds/overworld"));
+        // Create custom instance
+        overworldInstance = new MmoInstance("worlds/overworld", new File("data", "spawns"));
+        instanceManager.registerInstance(overworldInstance);
 
         // Set our custom player provider
         MinecraftServer.getConnectionManager().setPlayerProvider(MmoPlayer::new);
@@ -82,6 +74,9 @@ public class DuskfallServer {
 
         // TODO: Proxy?
         MojangAuth.init();
+
+        // Generate resource pack TODO: Move this somewhere else.
+        ResourcePackGen.GenerateResourcePack();
 
         // Finally, start the server
         logger.info("Starting server!");

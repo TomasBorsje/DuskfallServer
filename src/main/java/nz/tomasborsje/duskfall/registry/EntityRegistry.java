@@ -71,7 +71,7 @@ public class EntityRegistry {
         }
         DuskfallServer.logger.info("Loading entity definitions from {}", entityDefFolder.getAbsolutePath());
 
-        // Get all .json files in the /entitys subfolder
+        // Get all .json files in the /entities subfolder
         File[] entityFiles = entityDefFolder.listFiles((dir, name) -> name.endsWith(".json"));
         assert entityFiles != null;
         DuskfallServer.logger.info("Number of entity def files: {}", entityFiles.length);

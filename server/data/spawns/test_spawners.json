@@ -1,0 +1,20 @@
+[
+  {
+    "spawner_id": "spawner01",
+    "entity_id": "cow_thing",
+    "position": "10, 42, 10",
+    "respawn_time": 300
+  },
+  {
+    "spawner_id": "spawner02",
+    "entity_id": "skele",
+    "position": "-10, 42, -10",
+    "respawn_time": 10
+  },
+  {
+    "spawner_id": "spawner03",
+    "entity_id": "zomb",
+    "position": "20, 42, 0",
+    "respawn_time": 250
+  }
+]
