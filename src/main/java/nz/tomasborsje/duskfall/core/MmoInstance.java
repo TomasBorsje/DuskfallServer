@@ -22,7 +22,6 @@ import java.util.UUID;
 
 public class MmoInstance extends InstanceContainer {
     private final Set<EntitySpawner> entitySpawners = new HashSet<>();
-    private final static Gson gson = new Gson();
 
     public MmoInstance(String worldFolderPath, File spawnerDefFolder) {
         // This is the default constructor called when you call InstanceManager.createInstanceContainer()
@@ -32,46 +31,6 @@ public class MmoInstance extends InstanceContainer {
         setGenerator(unit -> unit.modifier().fillHeight(0, 40, Block.GRASS_BLOCK));
         setChunkSupplier(LightingChunk::new);
         setChunkLoader(new AnvilLoader(worldFolderPath));
-        loadEntitySpawners(spawnerDefFolder);
-    }
-
-    private void loadEntitySpawners(File entitySpawnerDefFolder) {
-        if (!entitySpawnerDefFolder.exists()) {
-            if (!entitySpawnerDefFolder.mkdir()) {
-                DuskfallServer.logger.warn("Failed to create /spawns subfolder!");
-            }
-        }
-        DuskfallServer.logger.info("Loading entity spawns from {}", entitySpawnerDefFolder.getAbsolutePath());
-
-        // Get all .json files in the /entities subfolder
-        File[] spawnerFiles = entitySpawnerDefFolder.listFiles((dir, name) -> name.endsWith(".json"));
-        assert spawnerFiles != null;
-        DuskfallServer.logger.info("Number of entity spawns files: {}", spawnerFiles.length);
-
-        // Load each entity
-        for (File spawnFile : spawnerFiles) {
-            String json = "";
-            try {
-                json = Files.readString(spawnFile.toPath());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            // Parse an array of entity definitions
-            JsonElement jsonElement = gson.fromJson(json, JsonElement.class);  // Convert the JSON string to JsonElement
-
-            if (jsonElement.isJsonArray()) {
-                JsonArray jsonArray = jsonElement.getAsJsonArray();
-
-                DuskfallServer.logger.info("Loading {} entity spawner definitions from {}", jsonArray.size(), spawnFile.getName());
-                for (JsonElement element : jsonArray) {
-                    EntitySpawnerDefinition spawnerDef = gson.fromJson(element, EntitySpawnerDefinition.class);
-                    addEntitySpawner(spawnerDef.buildEntitySpawner());
-                }
-            } else {
-                DuskfallServer.logger.error("Invalid JSON format in file {}, expected an array of entity spawner definitions!", spawnFile.getAbsolutePath());
-            }
-        }
     }
 
     public void addEntitySpawner(EntitySpawner spawner) {

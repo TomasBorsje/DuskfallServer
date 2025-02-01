@@ -47,6 +47,7 @@ public class DuskfallServer {
         // Init registries
         Registries.ITEMS.loadItemDefinitions(new File("data", "items"));
         Registries.ENTITIES.loadEntityDefinitions(new File("data", "entities"));
+        Registries.ENTITY_SPAWNERS.loadEntitySpawners(new File("data", "spawns"));
 
         // Connect to DB
         dbConnection = new DatabaseConnection(System.getenv("MMO_DATABASE_CONNECTION_STRING"));

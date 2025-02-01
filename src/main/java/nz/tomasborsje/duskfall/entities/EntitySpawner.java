@@ -32,13 +32,13 @@ public class EntitySpawner {
                 ticksUntilRespawn--;
             }
             else {
-                ticksUntilRespawn = respawnTimeInTicks;
                 spawnEntity();
             }
         }
     }
 
     private void spawnEntity() {
+        ticksUntilRespawn = respawnTimeInTicks;
         entity = new MmoCreature(entityDefinition, spawn);
         entity.setInstance(DuskfallServer.overworldInstance);
     }

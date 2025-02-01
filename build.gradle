@@ -7,6 +7,7 @@ group = 'nz.tomasborsje'
 version = '1.0-SNAPSHOT'
 
 repositories {
+    mavenLocal()
     mavenCentral()
 }
 
@@ -14,6 +15,8 @@ dependencies {
     implementation 'net.minestom:minestom-snapshots:d8c5831f4e'
 
     implementation 'com.google.guava:guava:32.0.1-jre'
+
+    implementation 'nz.borsjetomas:DuskfallCore:0.0.1'
 
     // Logging
     implementation 'org.slf4j:slf4j-api:2.0.16'

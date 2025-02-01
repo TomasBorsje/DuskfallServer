@@ -39,4 +39,16 @@ public class EntitySpawnerDefinition {
             throw new IllegalArgumentException("Invalid position ("+position+") in entity spawner definition!");
         }
     }
+
+    public String getEntityId() {
+        return entityId;
+    }
+
+    public String getPosition() {
+        return position;
+    }
+
+    public String getSpawnerId() {
+        return spawnerId;
+    }
 }
